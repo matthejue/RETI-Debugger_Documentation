@@ -1,0 +1,118 @@
+\documentclass{report}
+
+\input{./content/packages}
+\input{./content/declarations}
+\input{./content/desgin}
+
+\begin{document}
+
+\fontsize{10pt}{12pt}\selectfont
+
+\newgeometry{margin=4cm, bottom=5cm, headheight=0.5cm}
+
+\input{./content/titlepage}
+
+\thispagestyle{empty}
+\tableofcontents
+\thispagestyle{empty}
+\clearpage
+\pagestyle{plain}
+\pagenumbering{Roman}
+
+\listoffigures
+\newpage
+\listoftables
+
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{default}
+
+\chapter{Motivation}
+
+When I had to implement a PicoC-to-RETI-Compiler for my bachelor thesis I often had the problem that I had to debug the RETI code produced by the \alert{PicoC-Compiler}. \alert{PicoC} is a subset of C used in the operating systems lecture at the university of freiburg and \alert{RETI} is an assembler used in the operating systems and technical computer science lectures at the univeristy of freiburg. The PicoC-Compiler I implemented for the lecture has actually also a built-in \alert{RETI-Interpreter} that was neccessary to test the RETI-Code produced by the PicoC-Compiler. But just executing the RETI-Code and putting in print-Statements was not sufficient, I needed some kind of debugger. I came up with a provisional solution that can e.g. be seen \href{https://asciinema.org/a/526542}{here}. I implemented a sort of Vim plugin that was actually just a \href{https://github.com/matthejue/PicoC-Compiler/blob/master/src/interpr_showcase.vim}{config file} with special keybindings and settings. I implemented a special so called \alert{Show-Mode} into the PicoC-Compiler which actually just wrote the state of the RETI processor after each instruction with all it's registers, EPROM, UART and SRAM into a file and the provisional Vim plugin just jumped to the right place in this big file and used several windows that scrolled synchronously to fit as much RETI instructions as possible into the terminal window.
+
+This solution was very proviosonal and it was the best low effort solution I could come up with in the short amount of time I had. The solution surely had it's flaws, because the whole program (codesegment) and datasegment hat to fit into the visible windows and one had to guess the number of windows neccessary beforehand. And if the program is too big there is a limit how for one can decrease the font size of the terminal window in order to fit as much RETI instructions as possible into the terminal window.
+
+When I tutored the Operating Systems lecture using this \alert{Show-Mode} of the RETI-Interpreter to present the solutions of RETI exercises to the students I felt the urge to have a better tool for this, because for some programs I had to reduce the font size of the terminal window a lot such that the students could just barely see the instructions and values of the registers and memory cells.
+
+And now for this missing semester course the choice for my project came quite naturally, I wanted to finally implement a proper \alert{RETI-Debugger} that communicates with the RETI-Interpreter to show the state of the RETI processor after each instruction with the not yet implemented possibility to change values in the RETI processor while it's executing the RETI program and doing other shenanigans like compiling the PicoC code within the buffer directly into RETI code etc.
+
+In the following chapter \ref{chap:choosen_topics} two topics from the lecture that were used in the development of the plugin are going to be explained in more detail.
+
+\chapter{Choosen Topics}
+\label{chap:choosen_topics}
+
+By the choice of my project the two main topics I had to choose were \alert{Neovim} and \alert{Python}, as the RETI-Debugger is going to be implemented as a \alert{Neovim plugin} and the RETI-Interpreter that is part of the PicoC-Compiler is implemented in Python. These two topics and other topics from the lecture also touched in the project are described in table \ref{tab:topics}.
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		width = \linewidth,
+		colspec = {Q[1]Q[3]},
+		column{1} = {PrimaryColorDimmed, c},
+		column{2} = {BoxColor, l},
+		row{1} = {PrimaryColor, fg=white},
+		% vline{-} = {2-3}{PrimaryColor},
+		% hline{2-4} = {-}{PrimaryColor}
+		}
+		Topics                 & Description                                                                                                                                                                                                                                                                                          \\
+		Texteditor: Vim/Neovim & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Creating a Neovim plugin that communicates with the RETI-Interpreter and PicoC-Compiler following a protocol to inter alia show the state of the RETI processor after each instruction and compile the PicoC code within the buffer to RETI code \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}As fully featured IDE with language server and autoformater for lua and python by using Lazy.nvim} \\
+		Automation: Python     & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Language used in the RETI-Interpreter and PicoC-Compiler which was extended to act like a deamon that communicates with the RETI-Debugger Neovim plugin. Furthermore:                                                                            \\\hspace*{0.5\leftmargin}\labelitemii\hspace{\dimexpr\labelsep+0.5\tabcolsep}Reading metadatafrom comments was added\\\hspace*{0.5\leftmargin}\labelitemii\hspace{\dimexpr\labelsep+0.5\tabcolsep}The code quality was improved by restructering parts of the code\\\hspace*{0.5\leftmargin}\labelitemii\hspace{\dimexpr\labelsep+0.5\tabcolsep}Several bugs have been fixed}                                                                                                                                                                                                                \\
+    Docker                 & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} To provide a way for the students who are going to test this plugin to quickly set up and run the plugin}\\
+      % \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} As a way to know whether the plugin also works apart of my own working environment
+  % \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} As a way to document the installation of the plugin}                                                                                                                                                                                                                                                \\
+		% Linux                  & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}I was running NixOS, a quite special linux distribution for developing the plugin, which, by it's high configurability enabled a fast workflow that wouldn't be possible in other non-linux operating systems}                                   \\
+		% Git and Github         & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Used as version control system for the development of the RETI-Debugger Neovim Plugin and PicoC-Compiler and RETI-Interpreter                                                                                                                    \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Github was used as place from which both the PicoC-Compiler and RETI-Interpreter executable and also the RETI-Debuger Neovim plugin get downloaded using Lazy.nvim} \\
+		Latex                  & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Used for writing this report and thus also the documentation for the RETI-Debugger Neovim plugin in the appendix of this report                                                                                \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Used for writing a template used in this report that is also going to be used in my master thesis}\\
+		% LLM's                  & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}I used \url{https://www.perplexity.ai/} a lot to quickly get answers to some questions about lua, python, latex and certain \inlinebox{vim.loop} (i.e. libuv), \inlinebox{vim.api} functions} and vim settings                                   \\
+	\end{tblr}
+	\caption{Topics covered in the project}
+  \label{tab:topics}
+\end{table}
+
+In the following section \ref{sec:reti-interpreter} the extensions to the RETI-Interpreter that were neccessary to implement a communcation protocol between the RETI-Interpreter and the RETI-Debugger Neovim Plugin and other new features and bug fixes are going to be explained.
+
+\section{RETI-Interpreter}
+\label{sec:reti-interpreter}
+
+\subsection{Directory structure}
+
+\subsection{Communication Protocol}
+% new commandline options
+
+\subsection{Reading in metadata from comments}
+% new commandline options
+
+\subsection{Various bugfixes and code improvements}
+
+\section{RETI-Debugger}
+
+\subsection{Directory structure}
+% neovim directory structure and lua
+
+\subsection{User Intrerface with Nui}
+% menu, input, output popup
+
+\subsection{Asynchronous execution with Libuv}
+% communication protocol
+
+\chapter{Preventing unexpected behavior}
+
+\begin{figure}[H]
+	\resizebox{\textwidth}{!}{
+		\tikzfig{statemachine}
+	}
+	\caption{Statemachine of the different states importartant for access rights of windows}
+\end{figure}
+
+\chapter{Appendix}
+\pagenumbering{Alph}
+
+\section{Installation}
+
+\section{Keybindings and Commands}
+
+\chapter{Bibliography}
+\printbibliography[heading=none]
+
+\end{document}
