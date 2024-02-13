@@ -1,0 +1,7 @@
+ | Error: Error executing vim.schedule lua callback: ...ct-matthejue/reti-debugger/lua/reti-debugger/actions.lua:12: Cursor position outside buffer
+stack traceback:
+	[C]: in function 'nvim_win_set_cursor'
+	...ct-matthejue/reti-debugger/lua/reti-debugger/actions.lua:12: in function 'scroll_left_window'
+	...ct-matthejue/reti-debugger/lua/reti-debugger/actions.lua:38: in function 'autoscrolling'
+	...ct-matthejue/reti-debugger/lua/reti-debugger/actions.lua:55: in function ''
+	vim/_editor.lua: in function <vim/_editor.lua:0>
