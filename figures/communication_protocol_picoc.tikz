@@ -1,0 +1,19 @@
+\begin{tikzpicture}
+	\begin{pgfonlayer}{nodelayer}
+		\node [style=square] (0) at (-4, 1) {RETI-Debugger};
+		\node [style=square] (1) at (8, 1) {PicoC-Compiler};
+		\node [style=none] (4) at (8, -8) {};
+		\node [style=none] (5) at (-4, -8) {};
+		\node [style=none] (6) at (-4, 0) {};
+		\node [style=none] (7) at (8, -2) {};
+		\node [style=none] (8) at (-4, -4) {};
+		\node [style=none] (9) at (-4, -7) {};
+	\end{pgfonlayer}
+	\begin{pgfonlayer}{edgelayer}
+		\draw [style=colored line] (5.center) to (0);
+		\draw [style=colored line] (4.center) to (1);
+		\draw [style=directed edge] (7.center) to node [fill=white, sloped, align=center] {reti\_code} (8.center);
+		\draw [style=directed edge] (6.center) to node [fill=white, sloped] {buffer\_picoc\_code} (7.center);
+		\draw [style=directed edge] (7.center) to node [fill=white, sloped] {error\_msg} (9.center);
+	\end{pgfonlayer}
+\end{tikzpicture}

@@ -8,6 +8,7 @@
 *.bbl
 *.bcf
 *.blg
+*.pdf
 *.run.xml
 Library/files/
 .dep/
@@ -26,3 +27,4 @@ _minted-Main/
 *.snm
 *.nav
 _minted-main
+sn-article-template

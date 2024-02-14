@@ -8,6 +8,8 @@
 \tikzstyle{end node}=[fill={rgb,255: red,164; green,177; blue,224}, draw={rgb,255: red,52; green,74; blue,154}, shape=circle, very thick, minimum size=2cm]
 \tikzstyle{small node}=[fill={rgb,255: red,164; green,177; blue,224}, draw=none, shape=circle, minimum size=1cm]
 \tikzstyle{small end node}=[fill={rgb,255: red,164; green,177; blue,224}, draw={rgb,255: red,52; green,74; blue,154}, shape=circle, very thick, minimum size=1cm]
+\tikzstyle{square}=[fill={rgb,255: red,164; green,177; blue,224}, draw=none, shape=rectangle]
 
 % Edge styles
 \tikzstyle{directed edge}=[->, draw={rgb,255: red,52; green,74; blue,154}, very thick]
+\tikzstyle{colored line}=[-, draw={rgb,255: red,52; green,74; blue,154}, very thick]

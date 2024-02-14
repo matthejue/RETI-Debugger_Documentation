@@ -52,22 +52,22 @@ By the choice of my project the two main topics I had to choose were \alert{Neov
 		column{1} = {PrimaryColorDimmed, c},
 		column{2} = {BoxColor, l},
 		row{1} = {PrimaryColor, fg=white},
-		% vline{-} = {2-3}{PrimaryColor},
-		% hline{2-4} = {-}{PrimaryColor}
+		hlines = {PrimaryColor},
+		vlines = {PrimaryColor},
 		}
 		Topics                 & Description                                                                                                                                                                                                                                                                                          \\
 		Texteditor: Vim/Neovim & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Creating a Neovim plugin that communicates with the RETI-Interpreter and PicoC-Compiler following a protocol to inter alia show the state of the RETI processor after each instruction and compile the PicoC code within the buffer to RETI code \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}As fully featured IDE with language server and autoformater for lua and python by using Lazy.nvim} \\
 		Automation: Python     & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Language used in the RETI-Interpreter and PicoC-Compiler which was extended to act like a deamon that communicates with the RETI-Debugger Neovim plugin. Furthermore:                                                                            \\\hspace*{0.5\leftmargin}\labelitemii\hspace{\dimexpr\labelsep+0.5\tabcolsep}Reading metadatafrom comments was added\\\hspace*{0.5\leftmargin}\labelitemii\hspace{\dimexpr\labelsep+0.5\tabcolsep}The code quality was improved by restructering parts of the code\\\hspace*{0.5\leftmargin}\labelitemii\hspace{\dimexpr\labelsep+0.5\tabcolsep}Several bugs have been fixed}                                                                                                                                                                                                                \\
-    Docker                 & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} To provide a way for the students who are going to test this plugin to quickly set up and run the plugin}\\
-      % \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} As a way to know whether the plugin also works apart of my own working environment
-  % \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} As a way to document the installation of the plugin}                                                                                                                                                                                                                                                \\
+		Docker                 & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} To provide a way for the students who are going to test this plugin to quickly set up and run the plugin}                                                                                                                                       \\
+		% \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} As a way to know whether the plugin also works apart of my own working environment
+		% \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} As a way to document the installation of the plugin}                                                                                                                                                                                                                                                \\
 		% Linux                  & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}I was running NixOS, a quite special linux distribution for developing the plugin, which, by it's high configurability enabled a fast workflow that wouldn't be possible in other non-linux operating systems}                                   \\
 		% Git and Github         & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Used as version control system for the development of the RETI-Debugger Neovim Plugin and PicoC-Compiler and RETI-Interpreter                                                                                                                    \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Github was used as place from which both the PicoC-Compiler and RETI-Interpreter executable and also the RETI-Debuger Neovim plugin get downloaded using Lazy.nvim} \\
-		Latex                  & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Used for writing this report and thus also the documentation for the RETI-Debugger Neovim plugin in the appendix of this report                                                                                \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Used for writing a template used in this report that is also going to be used in my master thesis}\\
+		Latex                  & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Used for writing this report and thus also the documentation for the RETI-Debugger Neovim plugin in the appendix of this report                                                                                                                  \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Used for writing a template used in this report that is also going to be used in my master thesis}\\
 		% LLM's                  & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}I used \url{https://www.perplexity.ai/} a lot to quickly get answers to some questions about lua, python, latex and certain \inlinebox{vim.loop} (i.e. libuv), \inlinebox{vim.api} functions} and vim settings                                   \\
 	\end{tblr}
 	\caption{Topics covered in the project}
-  \label{tab:topics}
+	\label{tab:topics}
 \end{table}
 
 In the following section \ref{sec:reti-interpreter} the extensions to the RETI-Interpreter that were neccessary to implement a communcation protocol between the RETI-Interpreter and the RETI-Debugger Neovim Plugin and other new features and bug fixes are going to be explained.
@@ -79,6 +79,23 @@ In the following section \ref{sec:reti-interpreter} the extensions to the RETI-I
 
 \subsection{Communication Protocol}
 % new commandline options
+% communication over stdin and stdout, input and print
+
+\begin{figure}[H]
+	\centering
+	\resizebox{0.8\textwidth}{!}{
+		\tikzfig{communication_protocol}
+	}
+	\caption{Communication protocol between RETI-Debugger Neovim plugin and RETI-Interpreter}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\resizebox{0.8\textwidth}{!}{
+		\tikzfig{communication_protocol_picoc}
+	}
+	\caption{Communication protocol between RETI-Debugger Neovim plugin and PicoC-Compiler}
+\end{figure}
 
 \subsection{Reading in metadata from comments}
 % new commandline options
@@ -92,6 +109,7 @@ In the following section \ref{sec:reti-interpreter} the extensions to the RETI-I
 
 \subsection{User Intrerface with Nui}
 % menu, input, output popup
+% bild mit user interface beschrifftet
 
 \subsection{Asynchronous execution with Libuv}
 % communication protocol
@@ -99,12 +117,22 @@ In the following section \ref{sec:reti-interpreter} the extensions to the RETI-I
 \chapter{Preventing unexpected behavior}
 
 \begin{figure}[H]
+	\centering
 	\resizebox{\textwidth}{!}{
 		\tikzfig{statemachine}
 	}
 	\caption{Statemachine of the different states importartant for access rights of windows}
 \end{figure}
 
+\begin{figure}[H]
+	\centering
+	\resizebox{0.6\textwidth}{!}{
+		\tikzfig{statemachine_focus}
+	}
+	\caption{Small statemachine for making memory focus only at the start}
+\end{figure}
+
+\clearpage
 \chapter{Appendix}
 \pagenumbering{Alph}
 

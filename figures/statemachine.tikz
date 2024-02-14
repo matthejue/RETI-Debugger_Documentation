@@ -1,11 +1,11 @@
 \begin{tikzpicture}
 	\begin{pgfonlayer}{nodelayer}
-		\node [style=node, align=center] (0) at (-4, 2) {Interpreter completed\\next\_blocked\\Layout visible\\$\neg$popup\_visible};
-		\node [style=node, align=center] (1) at (10, 2) {$\neg$Interpreter completed\\next\_blocked\\$\neg$Layout visible\\$\neg$popup\_visible};
-		\node [style=node, align=center] (2) at (10, -10) {$\neg$Interpreter completed\\next\_blocked\\Layout visible\\popup\_visible};
-		\node [style=node, align=center] (3) at (-4, -10) {$\neg$Interpreter completed\\$\neg$next\_blocked\\Layout visible\\$\neg$popup\_visible};
-		\node [style=node, align=center] (4) at (-16, -10) {Interpreter completed\\next\_blocked\\$\neg$Layout visible\\$\neg$popup\_visible};
-		\node [style=node, align=center] (5) at (-4, 15) {\\Interpreter completed\\next\_blocked\\$\neg$Layout visible\\$\neg$popup\_visible};
+		\node [style=node, align=center] (0) at (-4, 2) {interpreter\_completed\\next\_blocked\\layout\_visible\\$\neg$popup\_visible};
+		\node [style=node, align=center] (1) at (10, 2) {$\neg$interpreter\_completed\\next\_blocked\\$\neg$layout\_visible\\$\neg$popup\_visible};
+		\node [style=node, align=center] (2) at (10, -10) {$\neg$interpreter\_completed\\next\_blocked\\layout\_visible\\popup\_visible};
+		\node [style=node, align=center] (3) at (-4, -10) {$\neg$interpreter\_completed\\$\neg$next\_blocked\\layout\_visible\\$\neg$popup\_visible};
+		\node [style=node, align=center] (4) at (-16, -10) {interpreter\_completed\\next\_blocked\\$\neg$layout\_visible\\$\neg$popup\_visible};
+		\node [style=node, align=center] (5) at (-4, 15) {interpreter\_completed\\next\_blocked\\$\neg$layout\_visible\\$\neg$popup\_visible};
 		\node [style=none] (7) at (-21, -10) {};
 	\end{pgfonlayer}
 	\begin{pgfonlayer}{edgelayer}
