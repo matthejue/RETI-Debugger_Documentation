@@ -138,9 +138,82 @@ In the following section \ref{sec:reti-interpreter} the extensions to the RETI-I
 
 \section{Installation}
 
+Recommended to just check out \inlinebox{Dockerfile}
+
 \section{Keybindings and Commands}
 
+\newcommand{\loadretiexample}{Open a menu with a listing of example programs and open one with \inlinebox{Enter}}
+\newcommand{\compilepicocbuffer}{Compile PicoC code in buffer to RETI}
+\newcommand{\startretibuffer}{Start RETI code in buffer in RETI-Debugger}
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		width = \linewidth,
+		colspec = {Q[1]Q[3]},
+		row{1} = {PrimaryColor,fg=white},
+		column{1} = {c},
+		row{even} = {PrimaryColorDimmed},
+		hlines = {PrimaryColor},
+		vlines = {PrimaryColor},
+		}
+		Key                    & Effect              \\
+		\inlinebox{<leader>pl} & \loadretiexample    \\
+		\inlinebox{<leader>pc} & \compilepicocbuffer \\
+		\inlinebox{<leader>ps} & \startretibuffer    \\
+		\inlinebox{<leader>ph} & Hide RETI-Debugger layout
+	\end{tblr}
+	\caption{Global keybindings}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		width = \linewidth,
+		colspec = {Q[1]Q[2]},
+		row{1} = {PrimaryColor,fg=white},
+		column{1} = {l},
+		row{even} = {PrimaryColorDimmed},
+		hlines = {PrimaryColor},
+		vlines = {PrimaryColor},
+		}
+		Key                              & Effect                                            \\
+		\inlinebox{:LoadRETIExample}     & \loadretiexample                                  \\
+		\inlinebox{:LoadRETIExample num} & Load an example program by number \inlinebox{num} \\
+		\inlinebox{:CompilePicoCBuffer}  & \compilepicocbuffer                               \\
+		\inlinebox{:StartRETIBuffer}     & \startretibuffer
+	\end{tblr}
+	\caption{Commands}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		width = \linewidth,
+		colspec = {Q[1]Q[4]},
+		row{1} = {PrimaryColor,fg=white},
+		column{1} = {c},
+		row{even} = {PrimaryColorDimmed},
+		hlines = {PrimaryColor},
+		vlines = {PrimaryColor},
+		}
+		Key                 & Effect                   \\
+		\inlinebox{n}       & Next instruction         \\
+		\inlinebox{<tab>}   & Switch windows           \\
+		\inlinebox{<S-tab>} & Switch windows backwards \\
+		\inlinebox{m}       & Menu to switch modes     \\
+		\inlinebox{f}       & Focus memory             \\
+		\inlinebox{r}       & Restart RETI-Debugger    \\
+		\inlinebox{q}       & Quit RETI-Debugger
+	\end{tblr}
+	\caption{Buffer keybindings}
+\end{table}
+
+% which-key erwähnen und backspace
+% autompletion mit tab erwähnen
+% LoadExample Argumente erwähnen
+
 \chapter{Bibliography}
-\printbibliography[heading=none]
+% \printbibliography[heading=none]
 
 \end{document}
