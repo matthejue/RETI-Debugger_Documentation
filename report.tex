@@ -138,33 +138,20 @@ In the following section \ref{sec:reti-interpreter} the extensions to the RETI-I
 
 \section{Installation}
 
-Recommended to just check out \inlinebox{Dockerfile}
+% Recommended to just check out \inlinebox{Dockerfile}
+
+As soon as the RETI-Debugger Neovim plugin and PicoC-Compiler including the RETI-Interpreter are installed, the different features of the plugin can be used with the help of the keybindings and commands discribed in the next section \ref{sec:keybindings and commands}.
 
 \section{Keybindings and Commands}
+\label{sec:keybindings and commands}
+
+As soon as Neovim starts, if the configurations from the config file \inlinebox{custom\_init.lua} in the main folder of the RETI-Debugger repo is used in \inlinebox{\sim/.config/init.lua} then all of the commands in \ref{tab:commands} are going to be available by the call to the \inlinebox{setup} function as configured in the config file. The configuration in \inlinebox{custom\_init.lua} is also used by the \inlinebox{Dockerfile} that automatically sets up an image with the plugin to be directly installed and usable as soon as Neovim is started.
+
+% internet connection
 
 \newcommand{\loadretiexample}{Open a menu with a listing of example programs and open one with \inlinebox{Enter}}
 \newcommand{\compilepicocbuffer}{Compile PicoC code in buffer to RETI}
-\newcommand{\startretibuffer}{Start RETI code in buffer in RETI-Debugger}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		width = \linewidth,
-		colspec = {Q[1]Q[3]},
-		row{1} = {PrimaryColor,fg=white},
-		column{1} = {c},
-		row{even} = {PrimaryColorDimmed},
-		hlines = {PrimaryColor},
-		vlines = {PrimaryColor},
-		}
-		Key                    & Effect              \\
-		\inlinebox{<leader>pl} & \loadretiexample    \\
-		\inlinebox{<leader>pc} & \compilepicocbuffer \\
-		\inlinebox{<leader>ps} & \startretibuffer    \\
-		\inlinebox{<leader>ph} & Hide RETI-Debugger layout
-	\end{tblr}
-	\caption{Global keybindings}
-\end{table}
+\newcommand{\startretibuffer}{Start RETI code in the current buffer in the RETI-Debugger. Mounts the window layout, starts the RETI-Interpreter asynchronously and sets buffer and not yet set global keybindings keybindings}
 
 \begin{table}[H]
 	\centering
@@ -184,7 +171,98 @@ Recommended to just check out \inlinebox{Dockerfile}
 		\inlinebox{:StartRETIBuffer}     & \startretibuffer
 	\end{tblr}
 	\caption{Commands}
+  \label{tab:commands}
 \end{table}
+
+All keybindings from \ref{tab:global keybindings} besides the keybinding \inlinebox{Space, then p, then h} to hide the layout are also directly available by the start of neovim, if they were passed to the \inlinebox{setup} function as it can be seen in the configuration in \inlinebox{custom\_init.lua}.
+
+Because the students who get assigned to test this plugin probably don't know anything about PicoC or the RETI assembler I prepared the keybinding \inlinebox{Space, then p, then l} and the command \inlinebox{:LoadRETIExample}. The keybinding just calls the command without arguments. The keybinding and the command without arguments open a menu of different interesting PicoC programs that get loaded into the buffer by submitting them via \inlinebox{Enter} and can then be compiled with either \inlinebox{Space, then p, then c} or \inlinebox{:CompilePicoCBuffer}. After compiling the compiled RETI code in the buffer can be debugged in the RETI-Debugger via \inlinebox{Space, then p, then s} or \inlinebox{:StartRETIBuffer}.
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		width = \linewidth,
+		colspec = {Q[1]Q[2]},
+		row{1} = {PrimaryColor,fg=white},
+		column{1} = {c},
+		row{even} = {PrimaryColorDimmed},
+		hlines = {PrimaryColor},
+		vlines = {PrimaryColor},
+		}
+		Key                    & Effect                    \\
+		\inlinebox{Space, then p, then l} & \loadretiexample          \\
+		\inlinebox{Space, then p, then c} & \compilepicocbuffer       \\
+		\inlinebox{Space, then p, then s} & \startretibuffer          \\
+		\inlinebox{Space, then p, then h} & Hide RETI-Debugger layout
+	\end{tblr}
+	\caption{Global keybindings}
+  \label{tab:global keybindings}
+\end{table}
+
+The menus all share the same keybindings that can be looked up in table \ref{tab:menu keybindings}.
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		width = \linewidth,
+		colspec = {Q[1]Q[2]},
+		row{1} = {PrimaryColor,fg=white},
+		column{1} = {c},
+		row{even} = {PrimaryColorDimmed},
+		hlines = {PrimaryColor},
+		vlines = {PrimaryColor},
+		}
+		Key                    & Effect                    \\
+    \inlinebox{j}, \inlinebox{$\downarrow$}, \inlinebox{Tab}, \inlinebox{m} & Focus next menu item \\
+    \inlinebox{k}, \inlinebox{$\uparrow$}, \inlinebox{Shift + Tab}, \inlinebox{Shirt+m} & Focus previous menu item \\
+    \inlinebox{Esc}, \inlinebox{q} & Close menu \\
+    \inlinebox{Enter}, \inlinebox{Space} & Submit the select menu entry
+	\end{tblr}
+	\caption{Menu keybindings}
+  \label{tab:menu keybindings}
+\end{table}
+
+The error and output popup windows that appear for syntactically incorrect RETI code and output from the instruction \inlinebox{CALL PRINT <reg>} also have special keybindings that can be looked up in table \ref{tab:popup keybindings}.
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		width = \linewidth,
+		colspec = {Q[2]Q[3]},
+		row{1} = {PrimaryColor,fg=white},
+		column{1} = {c},
+		row{even} = {PrimaryColorDimmed},
+		hlines = {PrimaryColor},
+		vlines = {PrimaryColor},
+		}
+		Key                    & Effect                    \\
+    \inlinebox{Enter}, \inlinebox{Esc}, \inlinebox{q}, clicking outside of the popup buffer & Close popup
+	\end{tblr}
+	\caption{Popup keybindings}
+  \label{tab:popup keybindings}
+\end{table}
+
+The input window that appear for input requests from the instruction \inlinebox{CALL INPUT <reg>} also has special keybindings that can be looked up in table \ref{tab:input field keybindings}.
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		width = \linewidth,
+		colspec = {Q[1]Q[2]},
+		row{1} = {PrimaryColor,fg=white},
+		column{1} = {c},
+		row{even} = {PrimaryColorDimmed},
+		hlines = {PrimaryColor},
+		vlines = {PrimaryColor},
+		}
+		Key                    & Effect                    \\
+    \inlinebox{Enter} & Submit input typed into the input field
+	\end{tblr}
+	\caption{Input field keybindings}
+  \label{tab:input field keybindings}
+\end{table}
+
+As soon as the window layout is mounted within the buffers of this layout the keybindings in table \ref{tab:buffer keybindings} can be used. The buffers of this window layout have their own keybindings and overwrite the vim default and all other keybindinds and only work within the buffers and not outside of the buffers.
 
 \begin{table}[H]
 	\centering
@@ -197,16 +275,17 @@ Recommended to just check out \inlinebox{Dockerfile}
 		hlines = {PrimaryColor},
 		vlines = {PrimaryColor},
 		}
-		Key                 & Effect                   \\
-		\inlinebox{n}       & Next instruction         \\
-		\inlinebox{<tab>}   & Switch windows           \\
-		\inlinebox{<S-tab>} & Switch windows backwards \\
-		\inlinebox{m}       & Menu to switch modes     \\
-		\inlinebox{f}       & Focus memory             \\
-		\inlinebox{r}       & Restart RETI-Debugger    \\
-		\inlinebox{q}       & Quit RETI-Debugger
+		Key                   & Effect                                                                                                                                                            \\
+		\inlinebox{n}         & The next instruction will be executed in the RETI-Interpreter and the new state of the RETI processor is going to be displayed in the RETI-Debugger               \\
+		\inlinebox{Tab}       & Switch between windows in the layout                                                                                                                              \\
+		\inlinebox{Shift+Tab} & Switch backwards between windows in the layout                                                                                                                    \\
+		\inlinebox{m}         & Opens menu to switch modes, the desired mode can be selected with \inlinebox{Enter}, there are only \alert{autoscrolling} and \alert{memory focus} mode available \\
+		\inlinebox{f}         & Focus memory if the \alert{memory focus} mode is active                                                                                                           \\
+		\inlinebox{r}         & Restart the RETI-Debugger with the currentely loaded RETI code                                                                                                    \\
+		\inlinebox{q}         & Quit the RETI-Debugger, kill the RETI-Interpreter if it's running, unmount the window layout and delete all global keybindings that are not supposed to be always active                                         \\
 	\end{tblr}
 	\caption{Buffer keybindings}
+  \label{tab:buffer keybindings}
 \end{table}
 
 % which-key erwähnen und backspace
