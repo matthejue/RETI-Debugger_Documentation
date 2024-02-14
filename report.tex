@@ -28,6 +28,7 @@
 \pagestyle{default}
 
 \chapter{Motivation}
+% mit dem Gedanken, dass Studenten das benutzen, daher Keybindings im Appendix sehr intuitiv
 
 When I had to implement a PicoC-to-RETI-Compiler for my bachelor thesis I often had the problem that I had to debug the RETI code produced by the \alert{PicoC-Compiler}. \alert{PicoC} is a subset of C used in the operating systems lecture at the university of freiburg and \alert{RETI} is an assembler used in the operating systems and technical computer science lectures at the univeristy of freiburg. The PicoC-Compiler I implemented for the lecture has actually also a built-in \alert{RETI-Interpreter} that was neccessary to test the RETI-Code produced by the PicoC-Compiler. But just executing the RETI-Code and putting in print-Statements was not sufficient, I needed some kind of debugger. I came up with a provisional solution that can e.g. be seen \href{https://asciinema.org/a/526542}{here}. I implemented a sort of Vim plugin that was actually just a \href{https://github.com/matthejue/PicoC-Compiler/blob/master/src/interpr_showcase.vim}{config file} with special keybindings and settings. I implemented a special so called \alert{Show-Mode} into the PicoC-Compiler which actually just wrote the state of the RETI processor after each instruction with all it's registers, EPROM, UART and SRAM into a file and the provisional Vim plugin just jumped to the right place in this big file and used several windows that scrolled synchronously to fit as much RETI instructions as possible into the terminal window.
 
@@ -136,7 +137,7 @@ In the following section \ref{sec:reti-interpreter} the extensions to the RETI-I
 \chapter{Appendix}
 \pagenumbering{Alph}
 
-\section{Installation}
+\section{Installation and Testing}
 
 % Recommended to just check out \inlinebox{Dockerfile}
 
@@ -170,7 +171,7 @@ As soon as Neovim starts, if the configurations from the config file \inlinebox{
 		\inlinebox{:CompilePicoCBuffer}  & \compilepicocbuffer                               \\
 		\inlinebox{:StartRETIBuffer}     & \startretibuffer
 	\end{tblr}
-	\caption{Commands}
+  \caption{Commands}
   \label{tab:commands}
 \end{table}
 
@@ -188,14 +189,14 @@ Because the students who get assigned to test this plugin probably don't know an
 		row{even} = {PrimaryColorDimmed},
 		hlines = {PrimaryColor},
 		vlines = {PrimaryColor},
-		}
+  }
 		Key                    & Effect                    \\
 		\inlinebox{Space, then p, then l} & \loadretiexample          \\
 		\inlinebox{Space, then p, then c} & \compilepicocbuffer       \\
 		\inlinebox{Space, then p, then s} & \startretibuffer          \\
 		\inlinebox{Space, then p, then h} & Hide RETI-Debugger layout
 	\end{tblr}
-	\caption{Global keybindings}
+  \caption{Global Keybindings}
   \label{tab:global keybindings}
 \end{table}
 
@@ -211,14 +212,14 @@ The menus all share the same keybindings that can be looked up in table \ref{tab
 		row{even} = {PrimaryColorDimmed},
 		hlines = {PrimaryColor},
 		vlines = {PrimaryColor},
-		}
+  }
 		Key                    & Effect                    \\
     \inlinebox{j}, \inlinebox{$\downarrow$}, \inlinebox{Tab}, \inlinebox{m} & Focus next menu item \\
     \inlinebox{k}, \inlinebox{$\uparrow$}, \inlinebox{Shift + Tab}, \inlinebox{Shirt+m} & Focus previous menu item \\
     \inlinebox{Esc}, \inlinebox{q} & Close menu \\
     \inlinebox{Enter}, \inlinebox{Space} & Submit the select menu entry
 	\end{tblr}
-	\caption{Menu keybindings}
+  \caption{Menu Keybindings}
   \label{tab:menu keybindings}
 \end{table}
 
@@ -234,11 +235,11 @@ The error and output popup windows that appear for syntactically incorrect RETI 
 		row{even} = {PrimaryColorDimmed},
 		hlines = {PrimaryColor},
 		vlines = {PrimaryColor},
-		}
+  }
 		Key                    & Effect                    \\
     \inlinebox{Enter}, \inlinebox{Esc}, \inlinebox{q}, clicking outside of the popup buffer & Close popup
 	\end{tblr}
-	\caption{Popup keybindings}
+  \caption{Popup Keybindings}
   \label{tab:popup keybindings}
 \end{table}
 
@@ -248,17 +249,17 @@ The input window that appear for input requests from the instruction \inlinebox{
 	\centering
 	\begin{tblr}{
 		width = \linewidth,
-		colspec = {Q[1]Q[2]},
+		colspec = {Q[1]Q[3]},
 		row{1} = {PrimaryColor,fg=white},
 		column{1} = {c},
 		row{even} = {PrimaryColorDimmed},
 		hlines = {PrimaryColor},
 		vlines = {PrimaryColor},
-		}
+  }
 		Key                    & Effect                    \\
-    \inlinebox{Enter} & Submit input typed into the input field
+		\inlinebox{Enter} & Submit input typed into the input field
 	\end{tblr}
-	\caption{Input field keybindings}
+  \caption{Input field keybindings}
   \label{tab:input field keybindings}
 \end{table}
 
@@ -274,7 +275,7 @@ As soon as the window layout is mounted within the buffers of this layout the ke
 		row{even} = {PrimaryColorDimmed},
 		hlines = {PrimaryColor},
 		vlines = {PrimaryColor},
-		}
+  }
 		Key                   & Effect                                                                                                                                                            \\
 		\inlinebox{n}         & The next instruction will be executed in the RETI-Interpreter and the new state of the RETI processor is going to be displayed in the RETI-Debugger               \\
 		\inlinebox{Tab}       & Switch between windows in the layout                                                                                                                              \\
@@ -284,7 +285,7 @@ As soon as the window layout is mounted within the buffers of this layout the ke
 		\inlinebox{r}         & Restart the RETI-Debugger with the currentely loaded RETI code                                                                                                    \\
 		\inlinebox{q}         & Quit the RETI-Debugger, kill the RETI-Interpreter if it's running, unmount the window layout and delete all global keybindings that are not supposed to be always active                                         \\
 	\end{tblr}
-	\caption{Buffer keybindings}
+  \caption{Buffer Keybindings}
   \label{tab:buffer keybindings}
 \end{table}
 
@@ -296,3 +297,4 @@ As soon as the window layout is mounted within the buffers of this layout the ke
 % \printbibliography[heading=none]
 
 \end{document}
+
