@@ -19,7 +19,7 @@ jobs:
       - name: Upload PDF to release
         uses: svenstaro/upload-release-action@v2
         with:
-          # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token
+          # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
           # https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository
           repo_token: ${{ secrets.UPLOAD_TO_RELEASE }}
           file: report.pdf
