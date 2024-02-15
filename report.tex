@@ -251,10 +251,10 @@ After making the RETI-Interpreter directly accessable, now only the RETI-Debugge
       dependencies = { "MunifTanjim/nui.nvim" },
       opts = {
           keys = {
-            load_example = "<leader>pl",
-            compile = "<leader>pc",
-            start = "<leader>ps",
-            hide = "<leader>ph"
+            load_example = "<leader>rl",
+            compile = "<leader>rc",
+            start = "<leader>rs",
+            hide = "<leader>rh"
           }
       }
     }
@@ -307,9 +307,9 @@ As soon as Neovim starts, if the configurations from the config file \inlinebox{
 	\label{tab:commands}
 \end{table}
 
-All keybindings from \ref{tab:global keybindings} besides the keybinding \inlinebox{Space, then p, then h} to hide the layout are also directly available by the start of neovim, if they were passed to the \inlinebox{setup} function as it can be seen in the configuration in \inlinebox{custom\_init.lua}.
+All keybindings from \ref{tab:global keybindings} besides the keybinding \inlinebox{Space, then r, then h} to hide the layout are also directly available by the start of neovim, if they were passed to the \inlinebox{setup} function as it can be seen in the configuration in \inlinebox{custom\_init.lua}.
 
-Because the students who get assigned to test this plugin probably don't know anything about PicoC or the RETI assembler I prepared the keybinding \inlinebox{Space, then p, then l} and the command \inlinebox{:LoadRETIExample}. The keybinding just calls the command without arguments. The keybinding and the command without arguments open a menu of different interesting PicoC programs that get loaded into the buffer by submitting them via \inlinebox{Enter} and can then be compiled with either \inlinebox{Space, then p, then c} or \inlinebox{:CompilePicoCBuffer}. After compiling the compiled RETI code in the buffer can be debugged in the RETI-Debugger via \inlinebox{Space, then p, then s} or \inlinebox{:StartRETIBuffer}.
+Because the students who get assigned to test this plugin probably don't know anything about PicoC or the RETI assembler I prepared the keybinding \inlinebox{Space, then r, then l} and the command \inlinebox{:LoadRETIExample}. The keybinding just calls the command without arguments. The keybinding and the command without arguments open a menu of different interesting PicoC programs that get loaded into the buffer by submitting them via \inlinebox{Enter} and can then be compiled with either \inlinebox{Space, then r, then c} or \inlinebox{:CompilePicoCBuffer}. After compiling the compiled RETI code in the buffer can be debugged in the RETI-Debugger via \inlinebox{Space, then r, then s} or \inlinebox{:StartRETIBuffer}.
 
 \begin{table}[H]
 	\centering
@@ -323,10 +323,10 @@ Because the students who get assigned to test this plugin probably don't know an
 		vlines = {PrimaryColor},
 		}
 		Key                               & Effect                    \\
-		\inlinebox{Space, then p, then l} & \loadretiexample          \\
-		\inlinebox{Space, then p, then c} & \compilepicocbuffer       \\
-		\inlinebox{Space, then p, then s} & \startretibuffer          \\
-		\inlinebox{Space, then p, then h} & Hide RETI-Debugger layout
+		\inlinebox{Space, then r, then l} & \loadretiexample          \\
+		\inlinebox{Space, then r, then c} & \compilepicocbuffer       \\
+		\inlinebox{Space, then r, then s} & \startretibuffer          \\
+		\inlinebox{Space, then r, then h} & Hide RETI-Debugger layout
 	\end{tblr}
 	\caption{Global Keybindings}
 	\label{tab:global keybindings}
