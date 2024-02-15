@@ -41,22 +41,11 @@
 % ┌───────────────────┐
 % │ Header and Footer │
 % └───────────────────┘
-% \fancypagestyle{plain}{%
-% 	\fancyhf{}
-% 	\renewcommand{\headrulewidth}{0.0mm}
-% 	\fancyfoot[C]{\thepage}
-% }
 \fancypagestyle{plain}{%
 	\fancyhf{}
-	\fancyfootoffset{0.5cm}
-	\fancyheadoffset{0.5cm}
-  \fancyhead[L]{\color{PrimaryColor}\leftmark}
-	\fancyhead[R]{\color{PrimaryColor}\rightmark}
-	\renewcommand{\headrulewidth}{0.4mm}
-  \renewcommand{\headrule}{\hbox to\headwidth{\color{PrimaryColor}\leaders\hrule height \headrulewidth\hfill}}
+	\renewcommand{\headrulewidth}{0.0mm}
 	\fancyfoot[C]{\thepage}
 }
-
 \fancypagestyle{default}{%
 	\fancyhf{}
 	\fancyfootoffset{0.5cm}

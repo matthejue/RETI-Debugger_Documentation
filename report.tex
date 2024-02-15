@@ -12,7 +12,6 @@
 
 \input{./content/titlepage}
 
-\thispagestyle{empty}
 \tableofcontents
 \thispagestyle{empty}
 \clearpage
@@ -24,6 +23,16 @@
 \listoftables
 
 \clearpage
+\fancypagestyle{plain}{%
+	\fancyhf{}
+	\fancyfootoffset{0.5cm}
+	\fancyheadoffset{0.5cm}
+  \fancyhead[L]{\color{PrimaryColor}\leftmark}
+	\fancyhead[R]{\color{PrimaryColor}\rightmark}
+	\renewcommand{\headrulewidth}{0.4mm}
+  \renewcommand{\headrule}{\hbox to\headwidth{\color{PrimaryColor}\leaders\hrule height \headrulewidth\hfill}}
+	\fancyfoot[C]{\thepage}
+}
 \pagenumbering{arabic}
 \pagestyle{default}
 
@@ -142,7 +151,7 @@ In the following section \ref{sec:reti-interpreter} the extensions to the RETI-I
 
 For the students who have to test this plugin I recommend to just use the \inlinebox{Dockerfile} in the main folder of the repository as described in \ref{sec:running in a docker image}. The \inlinebox{Dockerfile} just sets everything up for you and you don't have to install anything yourself etc.
 
-If want to install the plugin directly on your own machine you can follow the instructions in \ref{sec:manual installation}.
+If you want to install the plugin directly on your own machine you can follow the instructions in \ref{sec:manual installation}.
 
 \subsection{Running in a Docker Container}
 \label{sec:running in a docker image}
@@ -150,9 +159,10 @@ If want to install the plugin directly on your own machine you can follow the in
 If one wants to test the plugin in a clean sandbox without disturbances of any kind the recommended way of testing this plugin is to use the provided \inlinebox{Dockerfile} in the main folder of the repository. Therefore one can execute the following commands in the main folder of the repository to build an \alert{image} and run the image as a \alert{container}:
 
 \begin{terminal}
-	|\prompt|sudo docker build . -t reti_debugger_test_environment
-	|\prompt|sudo docker run -it --rm reti_debugger_test_environment /bin/bash
-
+  |\prompt|git clone https://github.com/matthejue/RETI-Debugger --depth 1
+  |\prompt|cd RETI-Debugger
+  |\prompt|sudo docker build . -t reti_debugger_test_environment
+  |\prompt|sudo docker run -it --rm reti_debugger_test_environment /bin/bash
 \end{terminal}
 
 Then in the Docker container if one runs:
@@ -186,7 +196,16 @@ the image is gone.
 \subsection{Manual Installation}
 \label{sec:manual installation}
 
-First of all the RETI-Intepreter has to be installed. The REIT-Interpreter is part of the PicoC-Compiler. After cloning the repo the recommended way is to install all required packages within a \alert{virtual environment}. Depending on the used \alert{shell} a different file has to be sourced to activate the virtual environment. The overall required steps are depicted in the following:
+First of all we have to make sure some packages are installed, like Neovim itself, because the RETI-Debugger is a Neovim plugin. The following steps differ depending on the packager manager and also depending on the distribution, because some distributions package repositories also have different names for the packages. The following steps are for the very commonly used package manager \inlinebox{pacman} which is used in Arch based distributions:
+
+% \begin{noindent}
+\begin{terminal}
+  |\prompt| sudo pacman -Syu 
+    && sudo pacman -S git neovim sudo python python-pip make
+\end{terminal}
+% \end{noindent}
+
+Now we're going to install the RETI-Intepreter. The REIT-Interpreter is part of the PicoC-Compiler. After cloning the repo the recommended way is to install all required packages within a \alert{virtual environment}. Depending on the used \alert{shell} a different file has to be sourced to activate the virtual environment. The overall required steps are depicted in the following:
 
 % \begin{noindent}
 \begin{terminal}
