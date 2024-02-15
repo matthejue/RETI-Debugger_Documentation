@@ -2,11 +2,12 @@
 	\begin{pgfonlayer}{nodelayer}
 		\node [style=node, align=center] (4) at (-16, -10) {$\neg$first\_focus\_over};
 		\node [style=none] (7) at (-21, -10) {};
-		\node [style=node] (8) at (-4, -10) {first\_focus\_over};
+		\node [style=node] (8) at (-2, -10) {first\_focus\_over};
 	\end{pgfonlayer}
 	\begin{pgfonlayer}{edgelayer}
 		\draw [style=directed edge] (7.center) to (4);
-		\draw [style=directed edge] (4) to node [fill=white, sloped] {first focus} (8);
-		\draw [style=directed edge, in=135, out=45, loop] (4) to node [fill=white, sloped] {start} ();
+		\draw [style=directed edge, bend right=15] (4) to node [fill=white, sloped] {next} (8);
+		\draw [style=directed edge, in=135, out=45, loop] (4) to node [fill=white, sloped] {change mode} ();
+		\draw [style=directed edge, bend left=345] (8) to node [fill=white, sloped] {start / change mode} (4);
 	\end{pgfonlayer}
 \end{tikzpicture}

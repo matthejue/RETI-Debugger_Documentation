@@ -32,3 +32,10 @@ clean:
 	-rm -r *.vrb
 	-rm -r *.snm
 	-rm -r *.nav
+	-rm -r *.pyg
+	-rm -r *.lof
+	-rm -r *.lot
+	-rm -r *.lot
+	-rm -r *.run.xml
+	-rm -r *.synctex.gz
+

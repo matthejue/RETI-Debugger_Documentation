@@ -125,6 +125,7 @@ In the following section \ref{sec:reti-interpreter} the extensions to the RETI-I
 % communication protocol
 
 \chapter{Preventing unexpected behavior}
+% sehr viel Zeit für Fehlerfindung verwendet, da es später in der Lehre Studenten nutzen sollen
 
 \begin{figure}[H]
 	\centering
@@ -196,12 +197,15 @@ the image is gone.
 \subsection{Manual Installation}
 \label{sec:manual installation}
 
-First of all we have to make sure some packages are installed, like Neovim itself, because the RETI-Debugger is a Neovim plugin. The following steps differ depending on the packager manager and also depending on the distribution, because some distributions package repositories also have different names for the packages. The following steps are for the very commonly used package manager \inlinebox{pacman} which is used in Arch based distributions:
+First of all we have to make sure some packages are installed, like Neovim itself, because the RETI-Debugger is a Neovim plugin. The following steps differ depending on the packager manager and also depending on the distribution, because some distributions package repositories also have different names for the packages. The following steps are for the very commonly used package manager \inlinebox{apt} which is used in Debian based distributions and in comments for the \inlinebox{pacman} package manager commonly used on Arch based distributions:
 
 % \begin{noindent}
 \begin{terminal}
-  |\prompt| sudo pacman -Syu 
-    && sudo pacman -S git neovim sudo python python-pip make
+  |\prompt| sudo apt update && sudo apt install git python3 python-pip make 
+     software-properties-common
+  |\prompt| sudo add-apt-repository ppa:neovim-ppa/unstable
+  |\prompt| sudo apt update && sudo apt install neovim
+  |\textcolor{gray}{sudo pacman -Syu && sudo pacman -S git neovim python python-pip make}|
 \end{terminal}
 % \end{noindent}
 
@@ -212,7 +216,7 @@ Now we're going to install the RETI-Intepreter. The REIT-Interpreter is part of 
 |\prompt| git clone https://github.com/matthejue/PicoC-Compiler
    -b missing_semester_project --depth 1
 |\prompt| cd PicoC-Compiler
-|\prompt| python -m venv .virtualenv
+|\prompt| python -m venv .virtualenv |\textcolor{gray}{# python3 for debian based distros}|
 |\prompt| source .virtualenv/bin/activate
 |\textcolor{gray}{# or source .virtualenv/bin/activate.fish for fish shell}|
 |\prompt| pip install --upgrade pip && pip install -r requirements.txt
@@ -245,6 +249,8 @@ After making the RETI-Interpreter directly accessable, now only the RETI-Debugge
   end
   vim.g.mapleader = " "
   vim.opt.rtp:prepend(lazypath)
+\end{terminal}
+\begin{terminal}
   local plugins = {
     {
       "matthejue/RETI-Debugger",

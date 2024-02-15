@@ -2,22 +2,23 @@
 	\begin{pgfonlayer}{nodelayer}
 		\node [style=square] (0) at (-4, 2) {RETI-Debugger};
 		\node [style=square] (1) at (8, 2) {RETI-Interpreter};
-		\node [style=none] (4) at (8, -26) {};
-		\node [style=none] (5) at (-4, -26) {};
+		\node [style=none] (4) at (8, -27) {};
+		\node [style=none] (5) at (-4, -27) {};
 		\node [style=none] (6) at (-4, 1) {};
 		\node [style=none] (7) at (8, -4) {};
 		\node [style=none] (8) at (-4, -12) {};
-		\node [style=none] (9) at (8, -11) {};
-		\node [style=none] (10) at (-4, -13) {};
-		\node [style=none] (11) at (8, -15) {};
-		\node [style=none] (12) at (-4, -17) {};
-		\node [style=none] (13) at (8, -19) {};
-		\node [style=none] (14) at (-4, -21) {};
-		\node [style=none] (15) at (8, -23) {};
-		\node [style=none] (17) at (-4, -25) {};
-		\node [style=none] (18) at (-4, -6) {};
-		\node [style=none] (19) at (-4, -9) {};
+		\node [style=none] (9) at (8, -12) {};
+		\node [style=none] (10) at (-4, -14) {};
+		\node [style=none] (11) at (8, -16) {};
+		\node [style=none] (12) at (-4, -18) {};
+		\node [style=none] (13) at (8, -20) {};
+		\node [style=none] (14) at (-4, -22) {};
+		\node [style=none] (15) at (8, -24) {};
+		\node [style=none] (17) at (-4, -26) {};
+		\node [style=none] (18) at (-4, -10) {};
+		\node [style=none] (19) at (-4, -6) {};
 		\node [style=none] (20) at (-4, -2) {};
+		\node [style=none] (21) at (8, -8) {};
 	\end{pgfonlayer}
 	\begin{pgfonlayer}{edgelayer}
 		\draw [style=colored line] (5.center) to (0);
@@ -29,12 +30,13 @@
 		\draw [style=directed edge] (13.center) to node [fill=white, sloped] {uart} (14.center);
 		\draw [style=directed edge] (14.center) to node [fill=white, sloped] {ack} (15.center);
 		\draw [style=directed edge] (15.center) to node [fill=white, sloped] {sram} (17.center);
-		\draw [style=directed edge] (7.center) to node [fill=white, sloped, align=center] {registers\\(+ output\_msg)} (18.center);
+		\draw [style=directed edge] (7.center) to node [fill=white, sloped, align=center] {(output\_msg +)\\registers} (18.center);
 		\draw [style=directed edge] (6.center) to node [fill=white, sloped] {buffer\_reti\_code} (7.center);
-		\draw [style=directed edge] (7.center) to node [fill=white, sloped, align=center] {error\_msg} (8.center);
-		\draw [style=directed edge] (18.center) to node [fill=white, sloped, pos=0.6, align=center] {ack} (9.center);
+		\draw [style=directed edge] (7.center) to node [fill=white, sloped, align=center, pos=0.8] {error\_msg} (8.center);
+		\draw [style=directed edge] (18.center) to node [fill=white, sloped, align=center] {ack} (9.center);
 		\draw [style=directed edge] (7.center) to node [fill=white, sloped, align=center] {input\_req} (19.center);
-		\draw [style=directed edge] (19.center) to node [fill=white, sloped, align=center, pos=0.6] {input + ack} (9.center);
+		\draw [style=directed edge] (19.center) to node [fill=white, sloped, align=center, pos=0.8] {input} (21.center);
 		\draw [style=directed edge] (20.center) to node [fill=white, sloped, align=center] {command} (7.center);
+		\draw [style=directed edge] (21.center) to node [fill=white, sloped, align=center, pos=0.4] {registers} (18.center);
 	\end{pgfonlayer}
 \end{tikzpicture}

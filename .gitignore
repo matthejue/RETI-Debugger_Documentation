@@ -26,6 +26,11 @@ _minted-Main/
 *.vrb
 *.snm
 *.nav
+*.pyg
+*.lof
+*.lot
+*.run.xml
+*.synctex.gz
 _minted-main
 _minted-report
 sn-article-template
