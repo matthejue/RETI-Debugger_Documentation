@@ -37,6 +37,7 @@
 \pagestyle{default}
 
 \chapter{Motivation}
+% sehr auslegbar was ein Debugger ist
 % mit dem Gedanken, dass Studenten das benutzen, daher Keybindings im Appendix sehr intuitiv
 
 When I had to implement a PicoC-to-RETI-Compiler for my bachelor thesis I often had the problem that I had to debug the RETI code produced by the \alert{PicoC-Compiler}. \alert{PicoC} is a subset of C used in the operating systems lecture at the university of freiburg and \alert{RETI} is an assembler used in the operating systems and technical computer science lectures at the univeristy of freiburg. The PicoC-Compiler I implemented for the lecture has actually also a built-in \alert{RETI-Interpreter} that was neccessary to test the RETI-Code produced by the PicoC-Compiler. But just executing the RETI-Code and putting in print-Statements was not sufficient, I needed some kind of debugger. I came up with a provisional solution that can e.g. be seen \href{https://asciinema.org/a/526542}{here}. I implemented a sort of Vim plugin that was actually just a \href{https://github.com/matthejue/PicoC-Compiler/blob/master/src/interpr_showcase.vim}{config file} with special keybindings and settings. I implemented a special so called \alert{Show-Mode} into the PicoC-Compiler which actually just wrote the state of the RETI processor after each instruction with all it's registers, EPROM, UART and SRAM into a file and the provisional Vim plugin just jumped to the right place in this big file and used several windows that scrolled synchronously to fit as much RETI instructions as possible into the terminal window.
@@ -91,6 +92,20 @@ In the following section \ref{sec:reti-interpreter} the extensions to the RETI-I
 % new commandline options
 % communication over stdin and stdout, input and print
 
+In order to debug RETI code there has to be a communication between RETI-Interpreter and RETI-Debugger such that the RETI-Interpreter knows when to execute the next instruction and the RETI-Debugger receives the state of the registers, EPROM, UART and SRAM after the execution of the instruction. Often a server is used for communcation, but in this case the communcation just works over pipes for Standardinput, Standarddoutput and Standarderror.
+
+The RETI-Debugger receives the state of the RETI processor after the execution of the instruction by the RETI-Interpreter over the Standardinput pipe by calling the \inlinebox{read_start()} function in \inlinebox{vim.loop} and sends commands like \inlinebox{next} or the RETI code the RETI-Interpreter should execute over the Standardoutput pipe by calling the \inlinebox{write} function in \inlinebox{vim.loop}. In section \ref{sec:asynchronous execution with libuv}  the subtable \inlinebox{vim.loop} is going to be explained in more detail.
+% discussed later
+% vim loop is, asynchronous
+
+The RETI-Interpreter receives commands like \inlinebox{next} or the RETI code he should execute over the Standardinput pipe by calling the \inlinebox{input()} function in Python and sends the state of the RETI processor after the execution of the instruction over the Standardoutput pipe by calling the \inlinebox{print()} function in Python. 
+
+The \inlinebox{input()} function was choosen, because then the RETI-Debugger can indicate the end of message by adding a newline character \inlinebox{\textbackslash n} to the end of the message. The end of a message somehow has to be indicated, else the RETI-Interpreter doesn't now when to stop listening and continue it's execution. In case of the \inlinebox{input()} function in Python that's particularly easy to accomplish by just adding a simple newline character \inlinebox{\textbackslash n} to the end of the message.
+
+At the very beginning of the communication the RETI-Debugger sends the content of the current buffer to the RETI-Intepreter which should preferably contain RETI code. In order to send the complete buffer at once though each newline character \inlinebox{\textbackslash n} is replaced just by the word \inlinebox{newline}, because else the RETI-Interpreter would stop listening and continue it's execution as soon as it receives a newline character \inlinebox{\textbackslash n}. Instead of \inlinebox{newline} I could have choosen many other words as long as they can't occur naturally in RETI code, but \inlinebox{newline} just seemed quite fitting, even though in terms of word length it's not quite optimal.
+
+% as it can be seen in figure...
+
 \begin{figure}[H]
 	\centering
 	\resizebox{0.8\textwidth}{!}{
@@ -122,6 +137,7 @@ In the following section \ref{sec:reti-interpreter} the extensions to the RETI-I
 % bild mit user interface beschrifftet
 
 \subsection{Asynchronous execution with Libuv}
+\label{sec:asynchronous execution with libuv}
 % communication protocol
 
 \chapter{Preventing unexpected behavior}
