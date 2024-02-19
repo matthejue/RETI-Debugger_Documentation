@@ -27,10 +27,10 @@
 	\fancyhf{}
 	\fancyfootoffset{0.5cm}
 	\fancyheadoffset{0.5cm}
-  \fancyhead[L]{\color{PrimaryColor}\leftmark}
+	\fancyhead[L]{\color{PrimaryColor}\leftmark}
 	\fancyhead[R]{\color{PrimaryColor}\rightmark}
 	\renewcommand{\headrulewidth}{0.4mm}
-  \renewcommand{\headrule}{\hbox to\headwidth{\color{PrimaryColor}\leaders\hrule height \headrulewidth\hfill}}
+	\renewcommand{\headrule}{\hbox to\headwidth{\color{PrimaryColor}\leaders\hrule height \headrulewidth\hfill}}
 	\fancyfoot[C]{\thepage}
 }
 \pagenumbering{arabic}
@@ -40,51 +40,42 @@
 % sehr auslegbar was ein Debugger ist
 % mit dem Gedanken, dass Studenten das benutzen, daher Keybindings im Appendix sehr intuitiv
 
-When I had to implement a PicoC-to-RETI-Compiler for my bachelor thesis I often had the problem that I had to debug the RETI code produced by the \alert{PicoC-Compiler}. \alert{PicoC} is a subset of C used in the operating systems lecture at the university of freiburg and \alert{RETI} is an assembler used in the operating systems and technical computer science lectures at the univeristy of freiburg. The PicoC-Compiler I implemented for the lecture has actually also a built-in \alert{RETI-Interpreter} that was neccessary to test the RETI-Code produced by the PicoC-Compiler. But just executing the RETI-Code and putting in print-Statements was not sufficient, I needed some kind of debugger. I came up with a provisional solution that can e.g. be seen \href{https://asciinema.org/a/526542}{here}. I implemented a sort of Vim plugin that was actually just a \href{https://github.com/matthejue/PicoC-Compiler/blob/master/src/interpr_showcase.vim}{config file} with special keybindings and settings. I implemented a special so called \alert{Show-Mode} into the PicoC-Compiler which actually just wrote the state of the RETI processor after each instruction with all it's registers, EPROM, UART and SRAM into a file and the provisional Vim plugin just jumped to the right place in this big file and used several windows that scrolled synchronously to fit as much RETI instructions as possible into the terminal window.
+\begin{wrapfigure}{R}{0.4\textwidth}
+	\centering
+  \includegraphics[width=0.4\textwidth]{./figures/picoc_compiler.png}
+	\caption{Logo of the PicoC-Compiler}
+	\label{fig:logo of the picoc compiler}
+\end{wrapfigure}
+
+When I had to implement a PicoC-to-RETI-Compiler for my bachelor thesis I often had the problem that I had to debug the RETI code produced by the \alert{PicoC-Compiler} (\href{https://github.com/matthejue/PicoC-Compiler/tree/missing_semester_project}{Repo} and logo in figure \ref{fig:logo of the reti debugger}). \alert{PicoC} is a subset of C used in the operating systems lecture at the university of freiburg and \alert{RETI} is an assembler used in the operating systems and technical computer science lectures at the univeristy of freiburg. The PicoC-Compiler I implemented for the lecture has actually also a built-in \alert{RETI-Interpreter} that was neccessary to test the RETI-Code produced by the PicoC-Compiler. But just executing the RETI-Code and putting in print-functions was not sufficient, I needed some kind of debugger. I came up with a provisional solution that can e.g. be seen \href{https://asciinema.org/a/526542}{here}. I implemented a sort of Vim plugin that was actually just a \href{https://github.com/matthejue/PicoC-Compiler/blob/master/src/interpr_showcase.vim}{config file} with special keybindings and settings. I implemented a special so called \alert{Show-Mode} into the PicoC-Compiler which actually just wrote the state of the RETI processor after each instruction with all it's registers, EPROM, UART and SRAM into a file and the provisional Vim plugin just jumped to the right place in this big file and used several windows that scrolled synchronously to fit as much RETI instructions as possible into the terminal window.
 
 This solution was very proviosonal and it was the best low effort solution I could come up with in the short amount of time I had. The solution surely had it's flaws, because the whole program (codesegment) and datasegment hat to fit into the visible windows and one had to guess the number of windows neccessary beforehand. And if the program is too big there is a limit how for one can decrease the font size of the terminal window in order to fit as much RETI instructions as possible into the terminal window.
 
 When I tutored the Operating Systems lecture using this \alert{Show-Mode} of the RETI-Interpreter to present the solutions of RETI exercises to the students I felt the urge to have a better tool for this, because for some programs I had to reduce the font size of the terminal window a lot such that the students could just barely see the instructions and values of the registers and memory cells.
 
-And now for this missing semester course the choice for my project came quite naturally, I wanted to finally implement a proper \alert{RETI-Debugger} that communicates with the RETI-Interpreter to show the state of the RETI processor after each instruction with the not yet implemented possibility to change values in the RETI processor while it's executing the RETI program and doing other shenanigans like compiling the PicoC code within the buffer directly into RETI code etc.
+\begin{wrapfigure}{L}{0.4\textwidth}
+	\centering
+  \includegraphics[width=0.4\textwidth]{./figures/reti-debugger.png}
+	\caption{Logo of the RETI-Debugger}
+	\label{fig:logo of the reti debugger}
+\end{wrapfigure}
 
-In the following chapter \ref{chap:choosen_topics} two topics from the lecture that were used in the development of the plugin are going to be explained in more detail.
+And now for this missing semester course the choice for my project came quite naturally, I wanted to finally implement a proper \alert{RETI-Debugger} (\href{https://github.com/freiburg-missing-semester-course/project-matthejue}{Repo} and logo in figure \ref{fig:logo of the reti debugger}) that communicates with the RETI-Interpreter to show the state of the RETI processor after each instruction with the not yet implemented possibility to change values in the RETI processor while it's executing the RETI program and doing other shenanigans like compiling the PicoC code within the buffer directly into RETI code etc.
+
+In the following section \ref{chap:choosen_topics} two topics from the lecture that were used in the development of the plugin are going to be explained in more detail.
 
 \chapter{Choosen Topics}
 \label{chap:choosen_topics}
 
 By the choice of my project the two main topics I had to choose were \alert{Neovim} and \alert{Python}, as the RETI-Debugger is going to be implemented as a \alert{Neovim plugin} and the RETI-Interpreter that is part of the PicoC-Compiler is implemented in Python. These two topics and other topics from the lecture also touched in the project are described in table \ref{tab:topics}.
 
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		width = \linewidth,
-		colspec = {Q[1]Q[3]},
-		column{1} = {PrimaryColorDimmed, c},
-		column{2} = {BoxColor, l},
-		row{1} = {PrimaryColor, fg=white},
-		hlines = {PrimaryColor},
-		vlines = {PrimaryColor},
-		}
-		Topics                 & Description                                                                                                                                                                                                                                                                                          \\
-		Texteditor: Vim/Neovim & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Creating a Neovim plugin that communicates with the RETI-Interpreter and PicoC-Compiler following a protocol to inter alia show the state of the RETI processor after each instruction and compile the PicoC code within the buffer to RETI code \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}As fully featured IDE with language server and autoformater for lua and python by using lazy.nvim} \\
-		Automation: Python     & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Language used in the RETI-Interpreter and PicoC-Compiler which was extended to act like a deamon that communicates with the RETI-Debugger Neovim plugin. Furthermore:                                                                            \\\hspace*{0.5\leftmargin}\labelitemii\hspace{\dimexpr\labelsep+0.5\tabcolsep}Reading metadatafrom comments was added\\\hspace*{0.5\leftmargin}\labelitemii\hspace{\dimexpr\labelsep+0.5\tabcolsep}The code quality was improved by restructering parts of the code\\\hspace*{0.5\leftmargin}\labelitemii\hspace{\dimexpr\labelsep+0.5\tabcolsep}Several bugs have been fixed}                                                                                                                                                                                                                \\
-    Docker                 & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} To provide a way for the students who are going to test this plugin to quickly set up and run the plugin with the provided \href{https://github.com/matthejue/RETI-Debugger/blob/main/Dockerfile}{Dockerfile}\\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} The PDF of this report was autogenerated with the help of Github Actions with \href{https://github.com/matthejue/RETI-Debugger_Documentation/blob/master/.github/workflows/create_and_upload_pdf.yml}{this} script which is syntactically in many ways similar to Docker Compose}                                                                                                                                       \\
-		% \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} As a way to know whether the plugin also works apart of my own working environment
-		% \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} As a way to document the installation of the plugin}                                                                                                                                                                                                                                                \\
-		% Linux                  & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}I was running NixOS, a quite special linux distribution for developing the plugin, which, by it's high configurability enabled a fast workflow that wouldn't be possible in other non-linux operating systems}                                   \\
-		% Git and Github         & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Used as version control system for the development of the RETI-Debugger Neovim Plugin and PicoC-Compiler and RETI-Interpreter                                                                                                                    \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Github was used as place from which both the PicoC-Compiler and RETI-Interpreter executable and also the RETI-Debuger Neovim plugin get downloaded using lazy.nvim} \\
-		Latex                  & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Used for writing this report and thus also the documentation for the RETI-Debugger Neovim plugin in the appendix of this report                                                                                                                  \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Used for writing a template used in this report that is also going to be used in my master thesis}\\
-		% LLM's                  & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}I used \url{https://www.perplexity.ai/} a lot to quickly get answers to some questions about lua, python, latex and certain \inlinebox{vim.loop} (i.e. libuv), \inlinebox{vim.api} functions} and vim settings                                   \\
-	\end{tblr}
-	\caption{Topics covered in the project}
-	\label{tab:topics}
-\end{table}
-
-In the following section \ref{sec:reti-interpreter} the extensions to the RETI-Interpreter that were neccessary to implement a communcation protocol between the RETI-Interpreter and the RETI-Debugger Neovim Plugin and other new features and bug fixes are going to be explained.
+% TODO: hier noch die beiden weiteren Themen einleiten
 
 \section{RETI-Interpreter}
 \label{sec:reti-interpreter}
+
+In the following sections the extensions to the RETI-Interpreter that were neccessary to implement a communcation protocol between the RETI-Interpreter and the RETI-Debugger Neovim Plugin  described in section \ref{sec:reti-interpreter}  and other new features and bug fixes are going to be explained.
+% TODO: mehr Bezug nehmen
 
 \subsection{Directory structure}
 
@@ -92,37 +83,68 @@ In the following section \ref{sec:reti-interpreter} the extensions to the RETI-I
 % new commandline options
 % communication over stdin and stdout, input and print
 
-In order to debug RETI code there has to be a communication between RETI-Interpreter and RETI-Debugger such that the RETI-Interpreter knows when to execute the next instruction and the RETI-Debugger receives the state of the registers, EPROM, UART and SRAM after the execution of the instruction. Often a server is used for communcation, but in this case the communcation just works over pipes for Standardinput, Standarddoutput and Standarderror.
+% https://tex.stackexchange.com/questions/28818/how-can-i-prevent-inline-math-formulas-from-overflowing-into-the-margin
+\sloppy
 
-The RETI-Debugger receives the state of the RETI processor after the execution of the instruction by the RETI-Interpreter over the Standardinput pipe by calling the \inlinebox{read_start()} function in \inlinebox{vim.loop} and sends commands like \inlinebox{next} or the RETI code the RETI-Interpreter should execute over the Standardoutput pipe by calling the \inlinebox{write} function in \inlinebox{vim.loop}. In section \ref{sec:asynchronous execution with libuv}  the subtable \inlinebox{vim.loop} is going to be explained in more detail.
+In order to debug RETI code there has to be a communication between RETI-Interpreter and RETI-Debugger such that the RETI-Interpreter can receive commands by the RETI-Debugger to e.g. execute the next instruction and the RETI-Debugger receives the state of the registers, EPROM, UART and SRAM after the execution of an instruction by the RETI-Intepreter. 
+
+Often a server is used for such communcation, but in this case the communcation just works over \alert{pipes} for Standardinput (\alert{Stdin}), Standardoutput (\alert{Stdout}) and Standarderror (\alert{Stderr}), as for a simple tool that should assist students in understanding PicoC and RETI assembler it's quite unlikely someone would feel the desire to execute the RETI-Interpreter on another machine and use the RETI-Debugger on another one.
+
+The RETI-Debugger receives the state of the RETI processor after the execution of an instruction by the RETI-Interpreter over the Stdout pipe by calling the \inlinebox{read_start(state.stdout, ...)} function in \inlinebox{vim.loop} and sends the RETI code the RETI-Interpreter should execute and also acknowledgments or commands like \inlinebox{next} over the Stdin pipe by calling the \inlinebox{write(state.stdin, ...)} function in \inlinebox{vim.loop}. In section \ref{sec:asynchronous execution with libuv}  the subtable \inlinebox{vim.loop} is going to be explained in more detail.
 % discussed later
 % vim loop is, asynchronous
 
-The RETI-Interpreter receives commands like \inlinebox{next} or the RETI code he should execute over the Standardinput pipe by calling the \inlinebox{input()} function in Python and sends the state of the RETI processor after the execution of the instruction over the Standardoutput pipe by calling the \inlinebox{print()} function in Python. 
+The RETI-Interpreter receives commands like \inlinebox{next} or the RETI code he should execute over the Stdin pipe by calling the \inlinebox{input()} function in Python and sends the state of the RETI processor after the execution of an instruction over the Stdout pipe by calling the \inlinebox{print()} function in Python.
 
-The \inlinebox{input()} function was choosen, because then the RETI-Debugger can indicate the end of message by adding a newline character \inlinebox{\textbackslash n} to the end of the message. The end of a message somehow has to be indicated, else the RETI-Interpreter doesn't now when to stop listening and continue it's execution. In case of the \inlinebox{input()} function in Python that's particularly easy to accomplish by just adding a simple newline character \inlinebox{\textbackslash n} to the end of the message.
-
-At the very beginning of the communication the RETI-Debugger sends the content of the current buffer to the RETI-Intepreter which should preferably contain RETI code. In order to send the complete buffer at once though each newline character \inlinebox{\textbackslash n} is replaced just by the word \inlinebox{newline}, because else the RETI-Interpreter would stop listening and continue it's execution as soon as it receives a newline character \inlinebox{\textbackslash n}. Instead of \inlinebox{newline} I could have choosen many other words as long as they can't occur naturally in RETI code, but \inlinebox{newline} just seemed quite fitting, even though in terms of word length it's not quite optimal.
-
-% as it can be seen in figure...
-
-\begin{figure}[H]
+\begin{wrapfigure}{R}{0.5\textwidth}
 	\centering
-	\resizebox{0.8\textwidth}{!}{
+	\resizebox{0.5\textwidth}{!}{
 		\tikzfig{communication_protocol}
 	}
 	\caption{Communication protocol between RETI-Debugger Neovim plugin and RETI-Interpreter}
-\end{figure}
+	\label{fig:communication reti debugger and reti interpreter}
+\end{wrapfigure}
 
-\begin{figure}[H]
+
+The \inlinebox{input()} function was choosen, because then the end of a message can be particularly easy specified by adding a newline character \inlinebox{\textbackslash n} to the end of the message. The end of a message somehow has to be indicated, else the RETI-Interpreter doesn't know when to stop listening and continue it's execution.
+
+At the very beginning of the communication the RETI-Debugger sends the content of the current buffer to the RETI-Intepreter which should preferably contain RETI code via \inlinebox{write(state.stdin, } \inlinebox{bfcontent .. "\textbackslash n")}. The \alert{communication protocol} is visualized in figure \ref{fig:communication reti debugger and reti interpreter}. In order to send the complete buffer at once though each newline character \inlinebox{\textbackslash n} is replaced by the Record Separator character (\alert{RS}) \inlinebox{0x1E} beforehand, because else the RETI-Interpreter would stop listening and continue it's execution as soon as it receives a newline character. Instead of the RS character I could have also choosen other ASCII characters as long as they can't occur naturally in RETI code and have no special meaning in lua strings. As all of this critera applied to the RS character it was chosen as a replacement character.
+
+On the other side the RETI-Interpreter in turn replaces the RS character \inlinebox{0x1E} by the newline character \inlinebox{\textbackslash n} to get the original buffer again. It's actually not important to remove the RS character again from the buffer, because the interpretation process of the RETI-Interpreter could be easily be extented to be able to handle additional symbols between the RETI instructions and the grammar with which a derivation tree is build from the RETI code is actually strong enough such that it doesn't need newline characters \inlinebox{\textbackslash n} seperating the instructions, But because the plugin might later have additional features added it might be a good idea to have the RETI code back in it's original form.
+
+After finishing the first round the communication protocol always starts with the RETI-Debugger sending a command like \inlinebox{next} to the RETI-Interpreter via \inlinebox{write(state.stdin, "next \textbackslash n")}. Only in the very first round the buffer content is send to the RETI-Interpreter to initiate the communication. After sending the buffer content or a command to the RETI-Interpreter there are several possible cases how the communication protocol continues.
+
+If the instruction the \inlinebox{PC} register currently pointed at when the \inlinebox{next} command was issued was a \inlinebox{CALL INPUT <reg>} instruction there are two cases. Either the RETI code contained \alert{comment metadata} as described in section \ref{sec:reading in metadata from comments} in the first lines that included the input that should be passed to the RETI program one after another whenever a \inlinebox{CALL INPUT <reg>} instruction is encountered. In this case the input metadata is just used as long as there are enough input values left for the encountered \inlinebox{CALL INPUT <reg>} instructions and the communcation protocol is just followed as usual.
+
+In case there's not enough input metadata the RETI-Interpreter sends a input request issued by \inlinebox{input("Input:")} in form of the string \inlinebox{"Input:"} to the RETI-Debugger which responds with sending the input. For the input the RETI-Debugger mounts a input popup window and asks the user for input. Once the user submitted it's input the input gets send to the RETI-Intepreter via \inlinebox{write(state.stdin, val .. "\textbackslash n")}.
+
+After that the communication protocol continues with the usual send, receive and acknowledge chain where a part of the state of the RETI-Interpreter like the registers, SRAM etc. is send by the RETI-Interpreter via \inlinebox{print(reti.<wincontent>_str() + chr(4))} and the RETI-Debugger receives it via \inlinebox{read_start(state.stdout, ...)} and acknowledges it via \inlinebox{write(state.stdin, "ack\textbackslash n") } such that the next part of the state can be send. 
+
+The character \inlinebox{chr(4)} is the end of transmission character (\alert{EOT}). All send outputs get collected via \inlinebox{read_start(state.stdout, ...)} by the RETI-Debugger until the EOT character \inlinebox{string.char(4)} appears. Only once the EOT character appears the collected output \inlinebox{data} string gets written into the corresponding window in the window layout of the RETI-Debugger.
+
+% communcationo protocol rest davon Prinzip
+
+In case the instruction the \inlinebox{PC} register currently pointed at when the \inlinebox{next} command was issued was a \inlinebox{CALL PRINT <reg>} instruction the RETI-Interpreter sends the output via the \inlinebox{print(f"Output: \{reg\_value\}")} function in form of the f-string \inlinebox{f"Output: \{reg\_value\}"} and sends the registers on top of it via a \inlinebox{print(reti.regs_str() + chr(4))} function afterwards.
+
+The RETI-Debugger then reads out \inlinebox{reg\_value} from the first line of the \inlinebox{data} string collected by \inlinebox{read_start(state.stdout, ...)} and writes it into the buffer of an output popup window that gets mounted. And it writes the rest of the \inlinebox{data} string without the first line containing the state of the registers into the corresponding window for the registers in the window layout of the RETI-Debugger.
+
+If the instruction the \inlinebox{PC} register currently pointed at when the \inlinebox{next} command was issued, was just a normal RETI instruction that's neither \inlinebox{CALL INPUT <reg>} or \inlinebox{CALL PRINT <reg>} then the RETI-Interpreter just sends the state of the registers after exucuting this instruction with the \inlinebox{print(reti.regs_str() + chr(4))} function and the RETI-Debugger reads it via \inlinebox{read_start(state.stdout, ...)} and just puts the received \inlinebox{data} string into the corresponding window for the registers in the window layout. And then the communication protocol just gets followed as usual.
+
+\begin{wrapfigure}{R}{0.5\textwidth}
 	\centering
-	\resizebox{0.8\textwidth}{!}{
+	\resizebox{0.5\textwidth}{!}{
 		\tikzfig{communication_protocol_picoc}
 	}
 	\caption{Communication protocol between RETI-Debugger Neovim plugin and PicoC-Compiler}
-\end{figure}
+	\label{fig:communication protocol between reti-debugger neovim plugin and picoc-compiler}
+\end{wrapfigure}
+
+In case an exception is encountered in the RETI-Interpreter, the RETI-Interpreter prints the corresponding error message via \inlinebox{print(error_str)} and the RETI-Debugger reads it out of there via \inlinebox{read_start(state.stdout, ...)} and writes the \inlinebox{data} string of the error into the buffer of an error popup window that gets mounted. The communcation ends there, because the RETI-Interpreter terminates after displaying the corresponding error message to the triggered exception.
+
+There is also a quick cummunication between RETI-Debugger and RETI-Interpreter when the PicoC-Compiler compiles The content of the current buffer into RETI code. The communcation protocol therefore is visualized in \ref{fig:communication protocol between reti-debugger neovim plugin and picoc-compiler}. As just mentioned the RETI-Debugger sends the content of the current buffer which should optimally contain PicoC code via \inlinebox{write(state.stdin, } \inlinebox{bfcontent .. "\textbackslash n")} to the PicoC-Compiler. The PicoC-Compiler compiles the PicoC code into RETI code if the PicoC code follows the syntax of PicoC and sends the RETI code to the RETI-Debugger via \inlinebox{print(reti_code + chr(4))}. The RETI-Debugger reads the compiled RETI code via \inlinebox{read_start(state.stdout, ...)} and writes the collected \inlinebox{data} string into an new buffer, but into the same window as the buffer from which the PicoC code was taken from. If the PicoC code doesn't follow the syntax of PicoC an exception is triggered and the corresponding error message for the exception is written into the buffer of an error popup window that gets mounted.
 
 \subsection{Reading in metadata from comments}
+\label{sec:reading in metadata from comments}
 % new commandline options
 
 \subsection{Various bugfixes and code improvements}
@@ -143,21 +165,27 @@ At the very beginning of the communication the RETI-Debugger sends the content o
 \chapter{Preventing unexpected behavior}
 % sehr viel Zeit für Fehlerfindung verwendet, da es später in der Lehre Studenten nutzen sollen
 
-\begin{figure}[H]
+\begin{wrapfigure}{R}{0.5\textwidth}
 	\centering
-	\resizebox{\textwidth}{!}{
+	\resizebox{0.5\textwidth}{!}{
 		\tikzfig{statemachine}
 	}
 	\caption{Statemachine of the different states importartant for access rights of windows}
-\end{figure}
+	\label{fig:statemachine}
+\end{wrapfigure}
 
-\begin{figure}[H]
+\lipsum
+
+\begin{wrapfigure}{R}{0.4\textwidth}
 	\centering
-	\resizebox{0.6\textwidth}{!}{
+	\resizebox{0.4\textwidth}{!}{
 		\tikzfig{statemachine_focus}
 	}
-	\caption{Small statemachine for making memory focus only at the start}
-\end{figure}
+  \caption{Small statemachine for making memory focus only at the start}
+	\label{fig:statemachine focus}
+\end{wrapfigure}
+
+\lipsum
 
 \clearpage
 \chapter{Appendix}
@@ -176,10 +204,10 @@ If you want to install the plugin directly on your own machine you can follow th
 If one wants to test the plugin in a clean sandbox without disturbances of any kind the recommended way of testing this plugin is to use the provided \inlinebox{Dockerfile} in the main folder of the repository. Therefore one can execute the following commands in the main folder of the repository to build an \alert{image} and run the image as a \alert{container}:
 
 \begin{terminal}
-  |\prompt|git clone https://github.com/matthejue/RETI-Debugger --depth 1
-  |\prompt|cd RETI-Debugger
-  |\prompt|sudo docker build . -t reti_debugger_test_environment
-  |\prompt|sudo docker run -it --rm reti_debugger_test_environment /bin/bash
+	|\prompt|git clone https://github.com/matthejue/RETI-Debugger --depth 1
+	|\prompt|cd RETI-Debugger
+	|\prompt|sudo docker build . -t reti_debugger_test_environment
+	|\prompt|sudo docker run -it --rm reti_debugger_test_environment /bin/bash
 \end{terminal}
 
 Then in the Docker container if one runs:
@@ -444,8 +472,40 @@ As soon as the window layout is mounted within the buffers of this layout the ke
 \end{table}
 
 % which-key erwähnen und backspace
+% colorscheme erwähnen
 % autompletion mit tab erwähnen
 % LoadExample Argumente erwähnen
+
+\newpage
+\section{Covered Topics}
+
+In section \ref{chap:choosen_topics} the choice for the two topics from the lecture which would be covered in more detail within the main part of the report was explained and thereby the following table \ref{tab:topics}, listing all covered topics from he lecture was also referended. As this table is excluded from counting into the page count of the main part of the report, it is included in the appendix.
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		width = \linewidth,
+		colspec = {Q[1]Q[3]},
+		column{1} = {PrimaryColorDimmed, c},
+		column{2} = {BoxColor, l},
+		row{1} = {PrimaryColor, fg=white},
+		hlines = {PrimaryColor},
+		vlines = {PrimaryColor},
+		}
+		Topics                 & Description                                                                                                                                                                                                                                                                                          \\
+		Texteditor: Vim/Neovim & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Creating a Neovim plugin that communicates with the RETI-Interpreter and PicoC-Compiler following a protocol to inter alia show the state of the RETI processor after each instruction and compile the PicoC code within the buffer to RETI code \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}As fully featured IDE with language server and autoformater for lua and python by using lazy.nvim} \\
+		Automation: Python     & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Language used in the RETI-Interpreter and PicoC-Compiler which was extended to act like a deamon that communicates with the RETI-Debugger Neovim plugin. Furthermore:                                                                            \\\hspace*{0.5\leftmargin}\labelitemii\hspace{\dimexpr\labelsep+0.5\tabcolsep}Reading metadatafrom comments was added\\\hspace*{0.5\leftmargin}\labelitemii\hspace{\dimexpr\labelsep+0.5\tabcolsep}The code quality was improved by restructering parts of the code\\\hspace*{0.5\leftmargin}\labelitemii\hspace{\dimexpr\labelsep+0.5\tabcolsep}Several bugs have been fixed}                                                                                                                                                                                                                \\
+		Docker                 & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} To provide a way for the students who are going to test this plugin to quickly set up and run the plugin with the provided \href{https://github.com/matthejue/RETI-Debugger/blob/main/Dockerfile}{Dockerfile}                                   \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} The PDF of this report was autogenerated with the help of Github Actions with \href{https://github.com/matthejue/RETI-Debugger_Documentation/blob/master/.github/workflows/create_and_upload_pdf.yml}{this} script which is syntactically in many ways similar to Docker Compose}                                                                                                                                       \\
+		% \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} As a way to know whether the plugin also works apart of my own working environment
+		% \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep} As a way to document the installation of the plugin}                                                                                                                                                                                                                                                \\
+		% Linux                  & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}I was running NixOS, a quite special linux distribution for developing the plugin, which, by it's high configurability enabled a fast workflow that wouldn't be possible in other non-linux operating systems}                                   \\
+		% Git and Github         & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Used as version control system for the development of the RETI-Debugger Neovim Plugin and PicoC-Compiler and RETI-Interpreter                                                                                                                    \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Github was used as place from which both the PicoC-Compiler and RETI-Interpreter executable and also the RETI-Debuger Neovim plugin get downloaded using lazy.nvim} \\
+		Latex                  & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Used for writing this report and thus also the documentation for the RETI-Debugger Neovim plugin in the appendix of this report                                                                                                                  \\\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}Used for writing a template used in this report that is also going to be used in my master thesis}\\
+		% LLM's                  & {\labelitemi\hspace{\dimexpr\labelsep+0.5\tabcolsep}I used \url{https://www.perplexity.ai/} a lot to quickly get answers to some questions about lua, python, latex and certain \inlinebox{vim.loop} (i.e. libuv), \inlinebox{vim.api} functions} and vim settings                                   \\
+	\end{tblr}
+	\caption{Topics covered in the project}
+	\label{tab:topics}
+\end{table}
 
 % \chapter{Bibliography}
 % \printbibliography[heading=none]

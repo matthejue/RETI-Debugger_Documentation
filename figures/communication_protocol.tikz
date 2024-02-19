@@ -35,7 +35,7 @@
 		\draw [style=directed edge] (7.center) to node [fill=white, sloped, align=center, pos=0.8] {error\_msg} (8.center);
 		\draw [style=directed edge] (18.center) to node [fill=white, sloped, align=center] {ack} (9.center);
 		\draw [style=directed edge] (7.center) to node [fill=white, sloped, align=center] {input\_req} (19.center);
-		\draw [style=directed edge] (19.center) to node [fill=white, sloped, align=center, pos=0.8] {input} (21.center);
+		\draw [style=directed edge] (19.center) to node [fill=white, sloped, align=center, pos=0.75] {input} (21.center);
 		\draw [style=directed edge] (20.center) to node [fill=white, sloped, align=center] {command} (7.center);
 		\draw [style=directed edge] (21.center) to node [fill=white, sloped, align=center, pos=0.4] {registers} (18.center);
 	\end{pgfonlayer}
