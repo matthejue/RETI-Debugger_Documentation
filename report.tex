@@ -216,7 +216,7 @@ In the statemachine e.g. the following properties are ensured:
   \begin{itemize}
     \item This property is neccessary, because this commands and their associated actions will then be executed within a buffer of the window layout that is only supposed to hold specific window content like registers and their values or the memory cells of a specific memory and their saved values or instructions.
   \end{itemize}
-  \item If the RETI-\alert{Interpreter hasn't terminated} it shouldn't be possible to start a RETI program via the command \inlinebox{:StartRETIBuffer}
+  \item If the RETI-\alert{Interpreter hasn't terminated} it shouldn't be possible to start a RETI program via the command \inlinebox{:StartRETIBuffer} which would be possible if the window layout was hided
   % TODO: compiled RETi program streichen
   \begin{itemize}
     \item The property is neccessay, because else several RETI-Interpreter processes could be started and one would like to only have one RETI-Interpreter process running at a time
@@ -229,7 +229,9 @@ In the statemachine e.g. the following properties are ensured:
     \end{itemize}
 \end{itemize}
 
-The properties just listed are just a few examples of the many properties ensured by the statemachine. Because other things have to be priotised more and the report has a limitted number of permitted pages not all properties have been listed and explained, but enough to get an idea.
+The properties just listed are just a few examples of the properties ensured by the statemachine to give an idea. The RETI-Debugger does also have a few smaller statemachines that take care of other smaller tasks. Explaining these smaller statemachines would be too much detail for this report, because other things have to be priotised more and the report has a limitted number of permitted pages.
+
+In the RETI-Debugger the statemachine for action control also wasn't implemented exactly like in figure \ref{fig:statemachine}, because often it is enough to only change the value of one variable, because the other variables never change when taking a transition associated with a certain input symbol and also not always all variables have to be checked to determine if a transition exists, because a certain input symbol might be associated with a small number of transitions or transitions that lead to the same state.
 
 % \begin{wrapfigure}{R}{0.4\textwidth}
 % 	\centering
