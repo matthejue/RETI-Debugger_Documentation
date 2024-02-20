@@ -36,7 +36,10 @@
 \pagenumbering{arabic}
 \pagestyle{default}
 
-\chapter{Motivation}
+\chapter{Introduction}
+\label{sec:introduction}
+\section{Motivation}
+\label{sec:motivation}
 % sehr auslegbar was ein Debugger ist
 % mit dem Gedanken, dass Studenten das benutzen, daher Keybindings im Appendix sehr intuitiv
 
@@ -47,11 +50,13 @@
 	\label{fig:logo of the picoc compiler}
 \end{wrapfigure}
 
-When I had to implement a PicoC-to-RETI-Compiler for my bachelor thesis I often had the problem that I had to debug the RETI code produced by the \alert{PicoC-Compiler} (\href{https://github.com/matthejue/PicoC-Compiler/tree/missing_semester_project}{Repo} and logo in figure \ref{fig:logo of the reti debugger}). \alert{PicoC} is a subset of C used in the operating systems lecture at the university of freiburg and \alert{RETI} is an assembler used in the operating systems and technical computer science lectures at the univeristy of freiburg. The PicoC-Compiler I implemented for the lecture has actually also a built-in \alert{RETI-Interpreter} that was neccessary to test the RETI-Code produced by the PicoC-Compiler. But just executing the RETI-Code and putting in print-functions was not sufficient, I needed some kind of debugger. I came up with a provisional solution that can e.g. be seen \href{https://asciinema.org/a/526542}{here}. I implemented a sort of Vim plugin that was actually just a \href{https://github.com/matthejue/PicoC-Compiler/blob/master/src/interpr_showcase.vim}{config file} with special keybindings and settings. I implemented a special so called \alert{Show-Mode} into the PicoC-Compiler which actually just wrote the state of the RETI processor after each instruction with all it's registers, EPROM, UART and SRAM into a file and the provisional Vim plugin just jumped to the right place in this big file and used several windows that scrolled synchronously to fit as much RETI instructions as possible into the terminal window.
+When I had to implement a PicoC-to-RETI-Compiler for my bachelor thesis I often had the problem that I had to debug the RETI code produced by the \alert{PicoC-Compiler} (\href{https://github.com/matthejue/PicoC-Compiler/tree/missing_semester_project}{Repo} and logo in figure \ref{fig:logo of the reti debugger}). \alert{PicoC} is a subset of C used in the operating systems lecture at the university of freiburg and \alert{RETI} is an assembler used in the operating systems and technical computer science lectures at the univeristy of freiburg. 
+
+The PicoC-Compiler I implemented for the lecture has actually also a built-in \alert{RETI-Interpreter} that was neccessary to test the RETI-Code produced by the PicoC-Compiler. But just executing the RETI-Code and putting in \inlinebox{CALL PRINT <reg>} instructions was not sufficient, I needed some kind of debugger. 
+
+I came up with a provisional solution that can e.g. be seen \href{https://asciinema.org/a/526542}{here}. I implemented a sort of Vim plugin that was actually just a \href{https://github.com/matthejue/PicoC-Compiler/blob/master/src/interpr_showcase.vim}{config file} with special keybindings and settings. I implemented a special so called \alert{Show-Mode} into the PicoC-Compiler which actually just wrote the state of the RETI processor after each instruction with all it's registers, EPROM, UART and SRAM into a file and the provisional Vim plugin just jumped to the right place in this big file and used several windows that scrolled synchronously to fit as much RETI instructions as possible into the terminal window.
 
 This solution was very proviosonal and it was the best low effort solution I could come up with in the short amount of time I had. The solution surely had it's flaws, because the whole program (codesegment) and datasegment hat to fit into the visible windows and one had to guess the number of windows neccessary beforehand. And if the program is too big there is a limit how for one can decrease the font size of the terminal window in order to fit as much RETI instructions as possible into the terminal window.
-
-When I tutored the Operating Systems lecture using this \alert{Show-Mode} of the RETI-Interpreter to present the solutions of RETI exercises to the students I felt the urge to have a better tool for this, because for some programs I had to reduce the font size of the terminal window a lot such that the students could just barely see the instructions and values of the registers and memory cells.
 
 \begin{wrapfigure}{L}{0.4\textwidth}
 	\centering
@@ -60,26 +65,28 @@ When I tutored the Operating Systems lecture using this \alert{Show-Mode} of the
 	\label{fig:logo of the reti debugger}
 \end{wrapfigure}
 
+When I tutored the Operating Systems lecture using this \alert{Show-Mode} of the RETI-Interpreter to present the solutions of RETI exercises to the students I felt the urge to have a better tool for this, because for some programs I had to reduce the font size of the terminal window a lot such that the students could just barely see the instructions and values of the registers and memory cells.
+
 And now for this missing semester course the choice for my project came quite naturally, I wanted to finally implement a proper \alert{RETI-Debugger} (\href{https://github.com/freiburg-missing-semester-course/project-matthejue}{Repo} and logo in figure \ref{fig:logo of the reti debugger}) that communicates with the RETI-Interpreter to show the state of the RETI processor after each instruction with the not yet implemented possibility to change values in the RETI processor while it's executing the RETI program and doing other shenanigans like compiling the PicoC code within the buffer directly into RETI code etc.
 
-In the following section \ref{chap:choosen_topics} two topics from the lecture that were used in the development of the plugin are going to be explained in more detail.
+In the following section \ref{sec:choosen_topics} two topics from the lecture that were used in the development of the plugin are going to be explained in more detail.
 
-\chapter{Choosen Topics}
-\label{chap:choosen_topics}
+\section{Choosen Topics}
+\label{sec:choosen_topics}
 
 By the choice of my project the two main topics I had to choose were \alert{Neovim} and \alert{Python}, as the RETI-Debugger is going to be implemented as a \alert{Neovim plugin} and the RETI-Interpreter that is part of the PicoC-Compiler is implemented in Python. These two topics and other topics from the lecture also touched in the project are described in table \ref{tab:topics}.
 
 % TODO: hier noch die beiden weiteren Themen einleiten
 
-\section{RETI-Interpreter}
+\chapter{RETI-Interpreter}
 \label{sec:reti-interpreter}
 
 In the following sections the extensions to the RETI-Interpreter that were neccessary to implement a communcation protocol between the RETI-Interpreter and the RETI-Debugger Neovim Plugin  described in section \ref{sec:reti-interpreter}  and other new features and bug fixes are going to be explained.
 % TODO: mehr Bezug nehmen
 
-\subsection{Directory structure}
+\section{Directory structure}
 
-\subsection{Communication Protocol}
+\section{Communication Protocol}
 % new commandline options
 % communication over stdin and stdout, input and print
 
@@ -143,25 +150,27 @@ In case an exception is encountered in the RETI-Interpreter, the RETI-Interprete
 
 There is also a quick cummunication between RETI-Debugger and RETI-Interpreter when the PicoC-Compiler compiles The content of the current buffer into RETI code. The communcation protocol therefore is visualized in \ref{fig:communication protocol between reti-debugger neovim plugin and picoc-compiler}. As just mentioned the RETI-Debugger sends the content of the current buffer which should optimally contain PicoC code via \inlinebox{write(state.stdin, } \inlinebox{bfcontent .. "\textbackslash n")} to the PicoC-Compiler. The PicoC-Compiler compiles the PicoC code into RETI code if the PicoC code follows the syntax of PicoC and sends the RETI code to the RETI-Debugger via \inlinebox{print(reti_code + chr(4))}. The RETI-Debugger reads the compiled RETI code via \inlinebox{read_start(state.stdout, ...)} and writes the collected \inlinebox{data} string into an new buffer, but into the same window as the buffer from which the PicoC code was taken from. If the PicoC code doesn't follow the syntax of PicoC an exception is triggered and the corresponding error message for the exception is written into the buffer of an error popup window that gets mounted.
 
-\subsection{Reading in metadata from comments}
+\section{Reading in metadata from comments}
 \label{sec:reading in metadata from comments}
 % new commandline options
 
-\subsection{Various bugfixes and code improvements}
+\section{Various bugfixes and code improvements}
 
-\section{RETI-Debugger}
+\chapter{RETI-Debugger}
 
-\subsection{Directory structure}
+\section{Directory structure}
 % neovim directory structure and lua
 
-\subsection{User Intrerface with Nui}
-% menu, input, output popup
-% bild mit user interface beschrifftet
-
-\subsection{Asynchronous execution with Libuv}
+\section{Asynchronous execution with Libuv}
 \label{sec:asynchronous execution with libuv}
 % communication protocol
 
+
+\section{User Intrerface with Nui}
+% menu, input, output popup
+% bild mit user interface beschrifftet
+
+\newpage
 \chapter{Preventing unexpected behavior}
 % sehr viel Zeit für Fehlerfindung verwendet, da es später in der Lehre Studenten nutzen sollen
 
@@ -170,22 +179,72 @@ There is also a quick cummunication between RETI-Debugger and RETI-Interpreter w
 	\resizebox{0.5\textwidth}{!}{
 		\tikzfig{statemachine}
 	}
-	\caption{Statemachine of the different states importartant for access rights of windows}
+	\caption{Statemachine of the different states important for action control}
 	\label{fig:statemachine}
 \end{wrapfigure}
 
-\lipsum
+A particularly large amount of time was spent on making sure no unexpected behavior can occur when using the RETI-Debugger. The RETI-Debugger is supposed to be used by students in the future and it's important that no unexpected behavior can occur when using this plugin. Most students have a tight time schedule where they can't afford to lose time because of unexpected behavior of the plugin which could cause them to rewrite their RETI program all over again etc. 
 
-\begin{wrapfigure}{R}{0.4\textwidth}
-	\centering
-	\resizebox{0.4\textwidth}{!}{
-		\tikzfig{statemachine_focus}
-	}
-  \caption{Small statemachine for making memory focus only at the start}
-	\label{fig:statemachine focus}
-\end{wrapfigure}
+For this reason the \alert{statemachine} in figure \ref{fig:statemachine} was implemented to make sure there's a well-defined set of states with well-defined transitions so I could know that at least for my modeled behaviour of the RETI-Debugger certain desired properties hold. If my implementation in lua also satisfies this statemachine is something I can't ensure as I can't create a \alert{transition system} from my lua code that I could check for correctness with the transition system of the statemachine. 
 
-\lipsum
+But the statemachine was for sure useful to be sure to have considered all possible cases and also to have an overview over the cases I already considered. I haven't made any formal model checking with the statemachine, I really only used it to make the code more readable and structured and to aid me in my thinking process.
+
+The statemachine $M = (I, S, s_0, \delta)$ is implemented over: 
+
+\begin{itemize}
+  \item a finite, non-empty set of \alert{input symbols}:\\
+    $I = \{\text{load example}, \text{start}, \text{complete}, \text{hide}, \text{popup appears}, \text{restart}, \text{quit}, \text{show}, \text{popup closed}\}$
+  \item a finite, non-empty set of \alert{states}:\\
+    $S = (V \cup \{\neg v \mid v\in V\})^3$ with \alert{variables}:\\$V = \{\text{interpreter\_completed}, \text{next\_blocked}, \text{layout\_visible}, \text{popup\_visible}\}$
+  \item an \alert{intial state}:\\$s_0 = (\text{interpreter\_completed}, \text{next\_blocked}, \neg\text{layout\_visible}, \neg\text{popup\_visible})$
+  \item a \alert{transition function}: $\delta: S \times I \rightarrow S$ 
+\end{itemize}
+
+The variables in $V$ used in the statemachine represent different parts of the RETI-Debugger's state important to control actions:
+
+\begin{itemize}
+  \item \inlinebox{interpreter_terminated}: If the RETI-Interpreter has terminated. That might have happened either because the RETI program has completed, the user quit out of the RETI-Debugger which also terminated the RETI-Intepreter or an exception within the RETI-Interpreter was triggered
+  \item \inlinebox{layout_visible}: If the window layout is visible
+  \item \inlinebox{popup_visible}: If a popup window is visible
+\end{itemize}
+
+The transition function of figure \ref{fig:statemachine} is explicetely implemented in the code of the RETI-Debugger as function \inlinebox{delta_actions(input_sym)}. The function only takes an input symbol \inlinebox{input_sym} from the set $I$ as argument, because the boolean variables $V$ of every state are saved within the lua table of \inlinebox{state.lua} that is accessible within the function \inlinebox{delta_actions(input_sym)}. If a transition exists \inlinebox{true} is returned and the variables are set according to the new state which the transition function assigns and if a transition doesn't exist \inlinebox{false} is returned. This way the function \inlinebox{delta_actions(input_sym)} can be used to determine if an action is possible in the current state, namely exactly when the input symbol associated with the action and the current state have a transition to another state within the transition function $\delta$.
+
+In the statemachine e.g. the following properties are ensured:
+\begin{itemize}
+  \item If the window \alert{layout} is \alert{visible} it shouldn't be possible to load an example PicoC program via the command \inlinebox{:LoadPicoCExample}, compile one via the command \inlinebox{:CompilePicoCBuffer} or start a RETI program in the RETI-Debugger via the command \inlinebox{:StartRETIBuffer}
+  \begin{itemize}
+    \item This property is neccessary, because this commands and their associated actions will then be executed within a buffer of the window layout that is only supposed to hold specific window content like registers and their values or the memory cells of a specific memory and their saved values or instructions.
+  \end{itemize}
+  \item If the RETI-\alert{Interpreter hasn't terminated} it shouldn't be possible to start a RETI program via the command \inlinebox{:StartRETIBuffer}
+  % TODO: compiled RETi program streichen
+  \begin{itemize}
+    \item The property is neccessay, because else several RETI-Interpreter processes could be started and one would like to only have one RETI-Interpreter process running at a time
+  \end{itemize}
+  \item If a \alert{popup} window, like an output or input window is \alert{visible} or the RETI-\alert{Interpreter terminated} it shouldn't be possible to execute the \inlinebox{next} action
+    \begin{itemize}
+      \item This property is neccessary, because if the user is constantly executing the \inlinebox{next} action and a popup appears and the user is still able to continue executing the \inlinebox{next} action, then more an more popup windows could be mounted on top of each other
+      \item Another reason for it being neccessary could be that, when the \inlinebox{CALL INPUT <reg>} instruction requires input, the execution of the next command could be triggered without that input could be typed in by the user. As the string \texttt{"next"} is not a valid number for the \inlinebox{CALL INPUT <reg>} instruction an exception within the RETI-Interprer will be triggered
+      \item And the last reason why this property is neccessary is that, if the RETI-Interpreter terminated no next command can be executed
+    \end{itemize}
+\end{itemize}
+
+The properties just listed are just a few examples of the many properties ensured by the statemachine. Because other things have to be priotised more and the report has a limitted number of permitted pages not all properties have been listed and explained, but enough to get an idea.
+
+% \begin{wrapfigure}{R}{0.4\textwidth}
+% 	\centering
+% 	\resizebox{0.4\textwidth}{!}{
+% 		\tikzfig{statemachine_focus}
+% 	}
+%   \caption{Small statemachine for making memory focus only at the start}
+% 	\label{fig:statemachine focus}
+% \end{wrapfigure}
+
+\chapter{Conclusion}
+
+\section{Results}
+
+\section{Enhancement ideas}
 
 \clearpage
 \chapter{Appendix}
@@ -332,7 +391,7 @@ As soon as Neovim starts, if the configurations from the config file \inlinebox{
 
 % internet connection
 
-\newcommand{\loadretiexample}{Open a menu with a listing of example programs and open one with \inlinebox{Enter}}
+\newcommand{\loadretiexample}{Open a menu with a listing of example PicoC programs and open one with \inlinebox{Enter}}
 \newcommand{\compilepicocbuffer}{Compile PicoC code in buffer to RETI}
 \newcommand{\startretibuffer}{Start RETI code in the current buffer in the RETI-Debugger. Mounts the window layout, starts the RETI-Interpreter asynchronously and sets buffer and not yet set global keybindings keybindings}
 
@@ -348,8 +407,8 @@ As soon as Neovim starts, if the configurations from the config file \inlinebox{
 		vlines = {PrimaryColor},
 		}
 		Key                              & Effect                                            \\
-		\inlinebox{:LoadRETIExample}     & \loadretiexample                                  \\
-		\inlinebox{:LoadRETIExample num} & Load an example program by number \inlinebox{num} \\
+		\inlinebox{:LoadPicoCExample}     & \loadretiexample                                  \\
+		\inlinebox{:LoadPicoCExample num} & Load an example PicoC program by number \inlinebox{num} \\
 		\inlinebox{:CompilePicoCBuffer}  & \compilepicocbuffer                               \\
 		\inlinebox{:StartRETIBuffer}     & \startretibuffer
 	\end{tblr}
@@ -479,7 +538,7 @@ As soon as the window layout is mounted within the buffers of this layout the ke
 \newpage
 \section{Covered Topics}
 
-In section \ref{chap:choosen_topics} the choice for the two topics from the lecture which would be covered in more detail within the main part of the report was explained and thereby the following table \ref{tab:topics}, listing all covered topics from he lecture was also referended. As this table is excluded from counting into the page count of the main part of the report, it is included in the appendix.
+In section \ref{sec:choosen_topics} the choice for the two topics from the lecture which would be covered in more detail within the main part of the report was explained and thereby the following table \ref{tab:topics}, listing all covered topics from he lecture was also referended. As this table is excluded from counting into the page count of the main part of the report, it is included in the appendix.
 
 \begin{table}[H]
 	\centering
