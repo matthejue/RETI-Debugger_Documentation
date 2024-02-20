@@ -165,6 +165,9 @@ There is also a quick cummunication between RETI-Debugger and RETI-Interpreter w
 \label{sec:asynchronous execution with libuv}
 % communication protocol
 
+In the exeuction process of the plugin it was often neccessary to wait for a certain event to happen, but then Neovim would actually freeze until this event happened or freeze forever if this event wouldn't ever happen. For this reason \alert{luv} was used to make any code that included waiting for a certain event asynchronous and non-blocking. The luv library makes \alert{libuv} available to lua scripts, whereby \alert{libuv} is a library to implement asynchronous behaviour. The \alert{luv} library is made available in Neovim via the subtable \inlinebox{vim.loop}.
+
+The library is also able to start processes in own threads such that they can be executed parallel oder pseudo-parallel. When the RETI-Debugger is started the RETI-Intepreter is started in a own thread via the \inlinebox{spawn(...)} function. It is not possible to execute anything in parallel that depends on the Neovim API as Neovim is still up to this day single-threaded.
 
 \section{User Intrerface with Nui}
 % menu, input, output popup

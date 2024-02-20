@@ -21,7 +21,8 @@
 		\draw [style=directed edge] (7.center) to (4);
 		\draw [style=directed edge, bend left=15] (3) to node [fill=white, sloped] {quit} (4);
 		\draw [style=directed edge] (0) to node [fill=white, sloped] {quit} (4);
-		\draw [style=directed edge, in=-105, out=-75, loop] (3) to node [fill=white, sloped] {next / restart} ();
+		\draw [style=directed edge, in=-105, out=-75, loop] (3) to node [fill=white, sloped] {next / restart / layout} ();
 		\draw [style=directed edge, in=-105, out=-75, loop] (4) to node [fill=white, sloped] {load / compile} ();
+		\draw [style=directed edge, in=-15, out=15, loop] (0) to node [fill=white, sloped] {layout} ();
 	\end{pgfonlayer}
 \end{tikzpicture}
