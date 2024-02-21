@@ -59,14 +59,14 @@ The PicoC-Compiler I implemented for the lecture has actually also a built-in \a
 
 I came up with a provisional solution that can e.g. be seen \href{https://asciinema.org/a/526542}{here}. I implemented a sort of Vim plugin that was actually just a \href{https://github.com/matthejue/PicoC-Compiler/blob/master/src/interpr_showcase.vim}{config file} with special keybindings and settings. I implemented a special so called \alert{Show-Mode} into the PicoC-Compiler which actually just wrote the state of the RETI processor after each instruction with all it's registers, EPROM, UART and SRAM into a file and the provisional Vim plugin just jumped to the right place in this big file and used several windows that scrolled synchronously to fit as much RETI instructions as possible into the terminal window.
 
-This solution was very proviosonal and it was the best low effort solution I could come up with in the short amount of time I had. The solution surely had it's flaws, because the whole program (codesegment) and datasegment hat to fit into the visible windows and one had to guess the number of windows neccessary beforehand. And if the program is too big there is a limit how for one can decrease the font size of the terminal window in order to fit as much RETI instructions as possible into the terminal window.
-
 \begin{wrapfigure}{L}{0.4\textwidth}
 	\centering
   \includegraphics[width=0.4\textwidth]{./figures/reti-debugger.png}
 	\caption{Logo of the RETI-Debugger}
 	\label{fig:logo of the reti debugger}
 \end{wrapfigure}
+
+This solution was very proviosonal and it was the best low effort solution I could come up with in the short amount of time I had. The solution surely had it's flaws, because the whole program (codesegment) and datasegment hat to fit into the visible windows and one had to guess the number of windows neccessary beforehand. And if the program is too big there is a limit how for one can decrease the font size of the terminal window in order to fit as much RETI instructions as possible into the terminal window.
 
 When I tutored the Operating Systems lecture using this \alert{Show-Mode} of the RETI-Interpreter to present the solutions of RETI exercises to the students I felt the urge to have a better tool for this, because for some programs I had to reduce the font size of the terminal window a lot such that the students could just barely see the instructions and values of the registers and memory cells.
 
@@ -93,6 +93,8 @@ In the following sections the extensions to the RETI-Interpreter that were necce
 % \section{Directory structure}
 
 \section{Communication Protocol}
+\label{sec:communication protocol}
+
 % new commandline options
 % communication over stdin and stdout, input and print
 
@@ -158,13 +160,16 @@ In case an exception is encountered in the RETI-Interpreter, the RETI-Interprete
 \section{Reading in metadata from comments}
 \label{sec:reading in metadata from comments}
 % new commandline options
+% for further information about RETI refer to my bachelor thesis
+
+When I was implementing the PicoC-Compiler I had to implement a testing system. In this testing system metadata was stored in the first lines of a program file within comments. This metadata included the inputs, expected outputs and the size of the datasegment in exactly this order. The inputs, expected outputs and the datasegment size had a corresponding prefix \inlinebox{input:}, \inlinebox{expected:} and \inlinebox{datasegment:} and were seperated from each other by white space as it can also be seen in figure \ref{code:example_test}.
 
 \begin{figure}[H]
   \centering
   \begin{dfile}[minted language=bash,minted options={fontsize=\small,autogobble}]
     # input: 40 21 2
     # expected: 42 42
-    # datasegment: 4
+    # datasegment: 1
     CALL INPUT ACC
     ADDI ACC 2
     CALL PRINT ACC
@@ -173,11 +178,18 @@ In case an exception is encountered in the RETI-Interpreter, the RETI-Interprete
     MULT ACC IN1
     CALL PRINT ACC
   \end{dfile}
-  \caption{Example test}
+  \caption{Example test with metadata}
   \label{code:example_test}
 \end{figure}
 
-\section{Various bugfixes and code improvements}
+This testing system worked over several bash scripts that called each other, central was a \href{https://github.com/matthejue/PicoC-Compiler/blob/missing_semester_project/extract_input_and_expected.sh}{bash script} that extracted the values of the inputs, expected outputs and the datasegment size from the comments. Because extracting the input, expected output and datasegment values would make testing the RETI-Debugger a lot easier I wanted to implement this funcionality directly into the RETI-Interpreter such that no Bash script had to be called. 
+
+Therefore a knew commandline option \inlinebox{-m} was implemented into the RETI-Debugger to enable this direct extraction of metadata within the RETI-Interpreter. This corresponding commit implementing the required changes can also be found in the following section \ref{sec:bugfixes and code improvements}.
+
+\section{Bugfixes and code improvements}
+\label{sec:bugfixes and code improvements}
+
+When I had to deal with the code of the PicoC-Compiler again I also used the time to improve the quality of the code and fix small bugs within the PicoC-Compiler whenever I came accross something that could be improved. Explaining all of the small changes would go beyond the scope of this report, but all changes can be loooked up in the \href{https://github.com/matthejue/PicoC-Compiler/commits/missing_semester_project}{commit history} and the most important changes are listed in section \ref{sec:commits to the reti-interpreter} of the Appendix.
 
 \chapter{RETI-Debugger}
 \label{ch:reti-debugger}
@@ -244,7 +256,7 @@ The variables in $V$ used in the statemachine represent different parts of the R
 
 The transition function of figure \ref{fig:statemachine} is explicetely implemented in the code of the RETI-Debugger as function \inlinebox{delta_actions(input_sym)}. The function only takes an input symbol \inlinebox{input_sym} from the set $I$ as argument, because the boolean variables $V$ of every state are saved within the lua table of \inlinebox{state.lua} that is accessible within the function \inlinebox{delta_actions(input_sym)}. If a transition exists \inlinebox{true} is returned and the variables are set according to the new state which the transition function assigns. And if a transition doesn't exist \inlinebox{false} is returned. This way the function \inlinebox{delta_actions(input_sym)} can be used to determine if an action is possible in the current state, namely exactly when the input symbol associated with the action and the current state have a transition to another state within the transition function $\delta$.
 
-The implemented statemachine also wasn't realized 1 to 1 like in figure \ref{fig:statemachine}, because often it is enough to only change the value of a few variables, because the other variables of the state never change when taking a transition associated with a certain input symbol to another state. And also not always all variables have to be checked to determine if a transition associated with a certain input symbol exists, because this transition might already be precisely determined by checking a few of the variables.
+The implemented statemachine also wasn't realized 1 to 1 like in figure \ref{fig:statemachine}, because often it is enough to only change the value of a few variables, because the other variables of the state never change when taking a transition associated with a certain input symbol to another state. And also not always all variables have to be checked to determine if a transition associated with a certain input symbol exists, because this transition might already be precisely determined by checking a few of the variables. Additionaly if there's interest in better understanding the statemachine itself different properties ensured by this statemachine are listed in section \ref{sec:properties ensured by the statemachine} of the appendix. 
 
 % \begin{wrapfigure}{R}{0.4\textwidth}
 % 	\centering
@@ -566,7 +578,51 @@ As soon as the window layout is mounted within the buffers of this layout the ke
 % autompletion mit tab erwähnen
 % LoadExample Argumente erwähnen
 
-\newpage
+\section{Commits to the RETI-Interpreter}
+\label{sec:commits to the reti-interpreter}
+
+In section \ref{sec:bugfixes and code improvements} the following list of smaller improvements to the PicoC-Compiler and RETI-Interpreter was mentioned. As these improvements are mostly important for documentation purposes and don't contain information relevant for understanding the RETI-Debugger, they are listed here:
+\begin{itemize}
+  \item making RETI-Interpreter more efficient by rewriting code to directly access values of registers and memory addresses and started implementing pipe communication with RETI-Debugger (\href{https://github.com/matthejue/PicoC-Compiler/commit/805bc81ce09530b6deba59f5e823ffa45d319a56}{commit})
+  \item reading file input also for Stdin, removed the requirement for \inlinebox{;} from RETI syntax and seperated registers and relative registers (\href{https://github.com/matthejue/PicoC-Compiler/commit/3bfe0868f962c55349d3c9a29f32ea5fa3c20b87}{commit})
+  \item new commandline option \inlinebox{--metadata_comments} discussed in section \ref{sec:reading in metadata from comments} and improved code readability \href{https://github.com/matthejue/PicoC-Compiler/commit/45fdce3ce9ad8623951d27c3357f86e5a3763018}{commit}
+  \item bug with \inlinebox{.out} files always being created (\href{https://github.com/matthejue/PicoC-Compiler/commit/cbd9d148a514413a930daae0dab642c04aefc089}{commit})
+  \item bug with color option automatically activating when passing file over Stdin (\href{https://github.com/matthejue/PicoC-Compiler/commit/ef43b17fec8e21909666b53a8ffc0f462ba2e86b}{commit})
+  \item writing metadata comments from PicoC code directly into RETI code and restructering code for reading metadata (\href{https://github.com/matthejue/PicoC-Compiler/commit/699f26a6f3394bedb3a8f2708ccb95bb6afffbea}{commit} and \href{https://github.com/matthejue/PicoC-Compiler/commit/f419a36efbb31358526d23e23caba6c9d853f896}{finishing commit})
+  \item new commandline option \inlinebox{--plugin_support} discussed in section \ref{sec:communication protocol} and removed \inlinebox{--pages} and \inlinebox{--show_mode} option as they aren't needed anymore (\href{https://github.com/matthejue/PicoC-Compiler/commit/8c86290598de81bbdc8fdb08dc531e0bca040f3a}{commit})
+  \item added \inlinebox{install} recpice to Makefile and removed unneeded recipes (\href{https://github.com/matthejue/PicoC-Compiler/commit/d2f5eccb609d1746d9151559f1f4705c1760557b}{commit})
+  \item bug if \inlinebox{UnexpectedToken} appears in RETI code (\href{https://github.com/matthejue/PicoC-Compiler/commit/0bc9945013ed387218c0e35c477b41026e1c3d82}{commit})
+  \item and many smaller bugs, code improvements and visual improvements to the output that don't get mentioned here, because they were to small of a change to be even worth mentioning or to even getting their own commit
+\end{itemize}
+
+\section{Properties ensured by the statemachine}
+\label{sec:properties ensured by the statemachine}
+
+In section \ref{sec:unexpected behavior} the following list of properties ensured by the statemachine for action control was mentioned. As these properties are just additional information for readers that have further interest in understanding the statemachine and they are not information relevant for understanding the RETI-Debugger, they are listed here:
+\begin{itemize}
+  \item If the window \alert{layout} is \alert{visible} it shouldn't be possible to load an example PicoC program via the command \inlinebox{:LoadPicoCExample}, compile one via the command \inlinebox{:CompilePicoCBuffer} or start a RETI program in the RETI-Debugger via the command \inlinebox{:StartRETIBuffer}
+  \begin{itemize}
+    \item This property is neccessary, because this commands and their associated actions will then be executed within a buffer of the window layout that is only supposed to hold specific window content like registers and their values or the memory cells of a specific memory and their saved values or instructions.
+  \end{itemize}
+  \item If the RETI-\alert{Interpreter hasn't terminated} it shouldn't be possible to start a RETI program via the command \inlinebox{:StartRETIBuffer} which would be possible if the window layout was hided
+  % TODO: compiled RETi program streichen
+  \begin{itemize}
+    \item The property is neccessay, because else several RETI-Interpreter processes could be started and one would like to only have one RETI-Interpreter process running at a time
+  \end{itemize}
+  \item If a \alert{popup} window, like an input, output or error window is \alert{visible} or the RETI-\alert{Interpreter terminated} it shouldn't be possible to execute the \inlinebox{next} action
+    \begin{itemize}
+      \item This property is neccessary, because if the user is constantly executing the \inlinebox{next} action and a popup appears and the user is still able to continue executing the \inlinebox{next} action, then more an more popup windows could be mounted on top of each other
+      \item Another reason for it being neccessary could be that, when the \inlinebox{CALL INPUT <reg>} instruction requires input, the execution of the next command could be triggered without that input could be typed in by the user. As the string \texttt{"next"} is not a valid number for the \inlinebox{CALL INPUT <reg>} instruction an exception within the RETI-Interprer will be triggered
+      \item And the last reason why this property is neccessary is that, if the RETI-Interpreter terminated no next command can be executed
+    \end{itemize}
+    \item If a \alert{popup} window, like an input, output or error window is \alert{visible} the size of the layout shouldn't update until the popup is closed
+    \begin{itemize}
+      \item This property is neccessary, because of specific implementation details of the Nui library. Returning to the original buffer after focusing the popup window doesn't work if in between the size of the layout changed.
+    \end{itemize}
+\end{itemize}
+
+The properties just listed are just a few examples of the properties ensured by the statemachine to give an idea. The RETI-Debugger does also have a few smaller statemachines that take care of other smaller tasks. Also explaining these smaller statemachines would be too much detail and effort for this report.
+
 \section{Covered Topics}
 
 In section \ref{sec:choosen_topics} the choice for the two topics from the lecture which would be covered in more detail within the main part of the report was explained and thereby the following table \ref{tab:topics}, listing all covered topics from he lecture was also referenced. As this table is excluded from counting into the page count of the main part of the report, it is included in the appendix.
@@ -596,27 +652,6 @@ In section \ref{sec:choosen_topics} the choice for the two topics from the lectu
 	\caption{Topics covered in the project}
 	\label{tab:topics}
 \end{table}
-
-% In the statemachine e.g. the following properties are ensured:
-% \begin{itemize}
-%   \item If the window \alert{layout} is \alert{visible} it shouldn't be possible to load an example PicoC program via the command \inlinebox{:LoadPicoCExample}, compile one via the command \inlinebox{:CompilePicoCBuffer} or start a RETI program in the RETI-Debugger via the command \inlinebox{:StartRETIBuffer}
-%   \begin{itemize}
-%     \item This property is neccessary, because this commands and their associated actions will then be executed within a buffer of the window layout that is only supposed to hold specific window content like registers and their values or the memory cells of a specific memory and their saved values or instructions.
-%   \end{itemize}
-%   \item If the RETI-\alert{Interpreter hasn't terminated} it shouldn't be possible to start a RETI program via the command \inlinebox{:StartRETIBuffer} which would be possible if the window layout was hided
-%   % TODO: compiled RETi program streichen
-%   \begin{itemize}
-%     \item The property is neccessay, because else several RETI-Interpreter processes could be started and one would like to only have one RETI-Interpreter process running at a time
-%   \end{itemize}
-%   \item If a \alert{popup} window, like an output or input window is \alert{visible} or the RETI-\alert{Interpreter terminated} it shouldn't be possible to execute the \inlinebox{next} action
-%     \begin{itemize}
-%       \item This property is neccessary, because if the user is constantly executing the \inlinebox{next} action and a popup appears and the user is still able to continue executing the \inlinebox{next} action, then more an more popup windows could be mounted on top of each other
-%       \item Another reason for it being neccessary could be that, when the \inlinebox{CALL INPUT <reg>} instruction requires input, the execution of the next command could be triggered without that input could be typed in by the user. As the string \texttt{"next"} is not a valid number for the \inlinebox{CALL INPUT <reg>} instruction an exception within the RETI-Interprer will be triggered
-%       \item And the last reason why this property is neccessary is that, if the RETI-Interpreter terminated no next command can be executed
-%     \end{itemize}
-% \end{itemize}
-
-% The properties just listed are just a few examples of the properties ensured by the statemachine to give an idea. The RETI-Debugger does also have a few smaller statemachines that take care of other smaller tasks. Explaining these smaller statemachines would be too much detail for this report, because other things have to be priotised more and the report has a limitted number of permitted pages.
 
 \chapter{Bibliography}
 \printbibliography[heading=none]
