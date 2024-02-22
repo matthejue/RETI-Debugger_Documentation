@@ -87,7 +87,7 @@ In the following sections \ref{ch:reti-interpreter} and \ref{ch:reti-debugger} t
 \chapter{RETI-Interpreter}
 \label{ch:reti-interpreter}
 
-In the following sections the extensions to the RETI-Interpreter that were neccessary to implement a communcation protocol between the RETI-Interpreter and the RETI-Debugger are described and other new features and bug fixes are going to be explained.
+In the following sections the extensions to the RETI-Interpreter that were made like the communication protocol between the RETI-Interpreter and the RETI-Debugger (section \ref{sec:communication protocol}), the new medadata extraction feature (section \ref{sec:reading in metadata from comments}) and various bug fixes (section \ref{sec:bugfixes and code improvements}) are going to be explained.
 % TODO: mehr Bezug nehmen
 
 % \section{Directory structure}
@@ -101,7 +101,7 @@ In the following sections the extensions to the RETI-Interpreter that were necce
 % https://tex.stackexchange.com/questions/28818/how-can-i-prevent-inline-math-formulas-from-overflowing-into-the-margin
 \sloppy
 
-In order to debug RETI code there has to be a communication between RETI-Interpreter and RETI-Debugger such that the RETI-Interpreter can receive commands by the RETI-Debugger to e.g. execute the next instruction and the RETI-Debugger receives the state of the registers, EPROM, UART and SRAM after the execution of an instruction by the RETI-Intepreter. 
+In order to debug RETI code there has to be a communication between RETI-Interpreter and RETI-Debugger such that the RETI-Interpreter can receive commands by the RETI-Debugger to e.g. execute the next instruction and the RETI-Debugger receives the state of the registers, EPROM, UART and SRAM after the execution of an instruction by the RETI-Intepreter. Because the RETI-Interpreter shouldn't expect to always communicate with the RETI-Debugger, as it is also a standalone tool by itself, thus the communication with the RETI-Debugger is activated over the commandline option \inlinebox{-P}.
 
 Often a server is used for such communcation, but in this case the communcation just works over \alert{pipes} for Standardinput (\alert{Stdin}), Standardoutput (\alert{Stdout}) and Standarderror (\alert{Stderr}), as for a simple tool that should assist students in understanding PicoC and RETI assembler it's quite unlikely someone would feel the desire to execute the RETI-Interpreter on another machine and use the RETI-Debugger on another one.
 
@@ -182,9 +182,7 @@ When I was implementing the PicoC-Compiler I had to implement a testing system. 
   \label{code:example_test}
 \end{figure}
 
-This testing system worked over several bash scripts that called each other, central was a \href{https://github.com/matthejue/PicoC-Compiler/blob/missing_semester_project/extract_input_and_expected.sh}{bash script} that extracted the values of the inputs, expected outputs and the datasegment size from the comments. Because extracting the input, expected output and datasegment values would make testing the RETI-Debugger a lot easier I wanted to implement this funcionality directly into the RETI-Interpreter such that no Bash script had to be called. 
-
-Therefore a knew commandline option \inlinebox{-m} was implemented into the RETI-Debugger to enable this direct extraction of metadata within the RETI-Interpreter. This corresponding commit implementing the required changes can also be found in the following section \ref{sec:bugfixes and code improvements}.
+This testing system worked over several bash scripts that called each other, central was a \href{https://github.com/matthejue/PicoC-Compiler/blob/missing_semester_project/extract_input_and_expected.sh}{bash script} that extracted the values of the inputs, expected outputs and the datasegment size from the comments. Because extracting the input, expected output and datasegment values would make testing the RETI-Debugger a lot easier I wanted to implement this funcionality directly into the RETI-Interpreter such that no Bash script had to be called. Therefore a new commandline option \inlinebox{-m} was implemented into the RETI-Debugger to enable this direct extraction of metadata within the RETI-Interpreter.
 
 \section{Bugfixes and code improvements}
 \label{sec:bugfixes and code improvements}
@@ -194,16 +192,36 @@ When I had to deal with the code of the PicoC-Compiler again I also used the tim
 \chapter{RETI-Debugger}
 \label{ch:reti-debugger}
 
+In the following sections certain implementation details of the RETI-Debugger like the user interface (section \ref{sec:user interface with nui}), asynchronous execution (section \ref{sec:asynchronous execution with libuv}) and the implementation of a statemachine to prevent unexpected behaviour (section \ref{sec:unexpected behavior}) are going to be explained.
+
 % lua erwähnen
 
 % \section{Directory structure}
 % neovim directory structure and lua
 
-\section{Asynchronous execution with Libuv}
+\section{User Interface}
+\label{sec:user interface with nui}
+% menu, input, output popup
+% bild mit user interface beschrifftet
+
+For the user interface of the RETI-Debugger the \alert{Nui library}\cite{tanjimMunifTanjimNuiNvim2024} was used. The Nui library provides a lot of different prefactured UI components. The RETI-Debugger made use of almost all components in the library like:
+\begin{itemize}
+  \item \alert{layout} to arrange several floating windows as the main window of the RETI-Debugger that appears when starting the plugin. Another affect of the layout is that all windows in the layout behave like one big window, i.e. a close action to one window also closes all other windows in the layout.
+  \item \alert{popup} that is a floating window displaying output of \inlinebox{CALL PRINT ACC} instructions of error messages. A special buffer autocommand makes the popup close automatically as soon as one leaves the buffer.
+  \item \alert{input field} that is a special floating window that allows to submit user input when a \inlinebox{CALL INPUT ACC} instruction is encountered. The input is then send to the RETI-Interpreter via the communication protocol described in section \ref{sec:communication protocol}.
+  \item \alert{menu} that is another special type of floating window that allows to select from several options and submit one of them
+\end{itemize}
+
+The different components also have different keybindings and autocommands assigned to them as described in section \ref{sec:keybindings and commands} in the appendix. In section \ref{sec:user interface components} of the appendix screenshots of the all the different components in use can be seen.
+
+% auto resize mit Timer
+% unterschiedliche Festertitle je nach Mode
+
+\section{Asynchronous execution}
 \label{sec:asynchronous execution with libuv}
 % communication protocol
 
-In the exeuction process of the plugin it was often neccessary to wait for a certain event to happen, but then Neovim would actually freeze until this event happens or freeze forever if this event would never happen. For this reason \alert{luv} was used to make any code that included waiting for a certain event asynchronous and non-blocking. The luv library makes \alert{libuv} available to lua, whereby \alert{libuv} is a library to implement asynchronous behaviour. The \alert{luv} library is made available in Neovim via the subtable \inlinebox{vim.loop}.
+In the exeuction process of the plugin it was often neccessary to wait for a certain event to happen, but then Neovim would actually freeze until this event happens or freeze forever if this event would never happen. For this reason \alert{luv} was used to make any code that included waiting for a certain event asynchronous and non-blocking. The luv library makes \alert{libuv} available to lua, whereby \alert{libuv} is a library to execute code asynchronously. The \alert{luv} library is made available in Neovim via the subtable \inlinebox{vim.loop}.
 
 This library is also able to start processes in own threads such that they can be executed \alert{(pseudo-)parallel}. When the RETI-Debugger is started the RETI-Intepreter is started in it's own thread via the \inlinebox{spawn(...)} function and also when a short compilation is started with the PicoC-Compiler, it is started in it's own thread via \inlinebox{spawn(...)}. The communication with both tools works over \alert{pipes} for Stdin \inlinebox{state.stdin}, Stdout \inlinebox{state.stdout} and Stderr \inlinebox{state.stderr} stored in the file \inlinebox{state.lua} that get passed to the \inlinebox{spawn(...)} function. 
 
@@ -212,10 +230,6 @@ This way Neovim won't freezy until the process finished unlike it would when bei
 With the functions \inlinebox{write(state.stdin, ...)}. With the functions \inlinebox{read_start(state.stdout, ...)}.
 
 It is not possible to execute anything in (pseudo-)parallel that depends on the Neovim API as Neovim is still up to this day \alert{single-threaded}. Instead it is excuted \alert{asynchronous}, one is performing independent tasks within a single thread such that no task blocks the main execution flow. Instead of pausing during lengthy operations, asynchronous methods allow the rest of the program to continue operating normally. Once the background task finishes, usually through a callback mechanism, the necessary actions occur according to the outcome of the completed task.
-
-\section{User Intrerface with Nui}
-% menu, input, output popup
-% bild mit user interface beschrifftet
 
 \newpage
 \section{Preventing unexpected behavior}
@@ -585,15 +599,25 @@ In section \ref{sec:bugfixes and code improvements} the following list of smalle
 \begin{itemize}
   \item making RETI-Interpreter more efficient by rewriting code to directly access values of registers and memory addresses and started implementing pipe communication with RETI-Debugger (\href{https://github.com/matthejue/PicoC-Compiler/commit/805bc81ce09530b6deba59f5e823ffa45d319a56}{commit})
   \item reading file input also for Stdin, removed the requirement for \inlinebox{;} from RETI syntax and seperated registers and relative registers (\href{https://github.com/matthejue/PicoC-Compiler/commit/3bfe0868f962c55349d3c9a29f32ea5fa3c20b87}{commit})
-  \item new commandline option \inlinebox{--metadata_comments} discussed in section \ref{sec:reading in metadata from comments} and improved code readability \href{https://github.com/matthejue/PicoC-Compiler/commit/45fdce3ce9ad8623951d27c3357f86e5a3763018}{commit}
+  \item new commandline option \inlinebox{--metadata_comments} (short \inlinebox{-m}) discussed in section \ref{sec:reading in metadata from comments} and improved code readability \href{https://github.com/matthejue/PicoC-Compiler/commit/45fdce3ce9ad8623951d27c3357f86e5a3763018}{commit}
   \item bug with \inlinebox{.out} files always being created (\href{https://github.com/matthejue/PicoC-Compiler/commit/cbd9d148a514413a930daae0dab642c04aefc089}{commit})
   \item bug with color option automatically activating when passing file over Stdin (\href{https://github.com/matthejue/PicoC-Compiler/commit/ef43b17fec8e21909666b53a8ffc0f462ba2e86b}{commit})
   \item writing metadata comments from PicoC code directly into RETI code and restructering code for reading metadata (\href{https://github.com/matthejue/PicoC-Compiler/commit/699f26a6f3394bedb3a8f2708ccb95bb6afffbea}{commit} and \href{https://github.com/matthejue/PicoC-Compiler/commit/f419a36efbb31358526d23e23caba6c9d853f896}{finishing commit})
-  \item new commandline option \inlinebox{--plugin_support} discussed in section \ref{sec:communication protocol} and removed \inlinebox{--pages} and \inlinebox{--show_mode} option as they aren't needed anymore (\href{https://github.com/matthejue/PicoC-Compiler/commit/8c86290598de81bbdc8fdb08dc531e0bca040f3a}{commit})
+  \item new commandline option \inlinebox{--plugin_support} (short \inlinebox{-P}) discussed in section \ref{sec:communication protocol} and removed \inlinebox{--pages} and \inlinebox{--show_mode} option as they aren't needed anymore (\href{https://github.com/matthejue/PicoC-Compiler/commit/8c86290598de81bbdc8fdb08dc531e0bca040f3a}{commit})
   \item added \inlinebox{install} recpice to Makefile and removed unneeded recipes (\href{https://github.com/matthejue/PicoC-Compiler/commit/d2f5eccb609d1746d9151559f1f4705c1760557b}{commit})
   \item bug if \inlinebox{UnexpectedToken} appears in RETI code (\href{https://github.com/matthejue/PicoC-Compiler/commit/0bc9945013ed387218c0e35c477b41026e1c3d82}{commit})
   \item and many smaller bugs, code improvements and visual improvements to the output that don't get mentioned here, because they were to small of a change to be even worth mentioning or to even getting their own commit
 \end{itemize}
+
+\section{User Interface components}
+\label{sec:user interface components}
+
+\includegraphics{./figures/layout.png}
+\includegraphics{./figures/input_field.png}
+\includegraphics{./figures/output_popup.png}
+\includegraphics{./figures/error_popup.png}
+\includegraphics{./figures/menu.png}
+\includegraphics{./figures/menu_example.png}
 
 \section{Properties ensured by the statemachine}
 \label{sec:properties ensured by the statemachine}
@@ -657,3 +681,11 @@ In section \ref{sec:choosen_topics} the choice for the two topics from the lectu
 \printbibliography[heading=none]
 
 \end{document}
+
+% Fleury: Da ja eigenes Template
+% brauchen wir Abstract oder so wie in Example PDF?
+% Schtiftgröße in Bildern ok?
+% zählt Titel auch in Seitenzahl rein?
+% Transitions so ok?
+
+% Latex Sourcecode selbst explizit verlinken. Unterscheidung zwischen PDF und Sourcecode
