@@ -219,15 +219,15 @@ The different components also have different keybindings assigned to them as des
 \label{sec:asynchronous execution with libuv}
 % communication protocol
 
-In the exeuction process of the plugin it was often neccessary to wait for a certain event to happen, but then Neovim would actually freeze until this event happens or freeze forever if this event would never happen. For this reason \alert{luv}\cite{LuvitLuvBare} was used to make any code that included waiting for a certain event asynchronous and non-blocking. The luv library makes \alert{libuv}\cite{LibuvLibuvCrossplatform} available to lua, whereby libuv is a widely used cross-platform library to execute code asynchronously.
+In the exeuction process of the plugin it was often neccessary to wait for a certain event to happen, but then Neovim would actually freeze until this event happens or freeze forever if this event would never happen. For this reason \alert{luv}\cite{LuvitLuvBare} was used to make any code that included waiting for a certain event asynchronous and non-blocking. The luv library makes \alert{libuv}\cite{LibuvLibuvCrossplatform} available in lua, whereby libuv is a widely used cross-platform library to execute code asynchronously.
 
-As luv is actually an external library that was made available in Neovim over the subtable \inlinebox{vim.loop}, the internals of it won't be explained in too much detail as there's an overwehlming amount of theory connected with this topic. But as \inlinebox{vim.loop} is technivally in spite of everything a part of Neovim and as the plugin made extensive use of this library there's a special section \ref{sec:asynchronous execution} in the appendix explaining different particularities of using asynchronous execution in Neovim and listing all the different functions from \inlinebox{vim.loop} used in the project.
+As luv is actually an external library that was made available in Neovim over the subtable \inlinebox{vim.loop}, the internals of it won't be explained in too much detail as there's an overwehlming amount of theory connected with the topic of asynchronous execution. But as \inlinebox{vim.loop} is technivally in spite of everything a part of Neovim and as the plugin made extensive use of this library there's a special section \ref{sec:asynchronous execution} in the appendix explaining different particularities of using asynchronous execution in Neovim and listing all the different functions from \inlinebox{vim.loop} used in the project.
 
 The library was used for starting the RETI-Interpreter and PicoC-Compiler \alert{(pseudo-)parallel} in their own \alert{threads} via \inlinebox{spawn(...)}, as otherwise they would freeze Neovim until they are finished. For the RETI-Interpreter this is even neccessary, because it's supposed to keep a communication protocol running with the RETI-Debugger at all time. The library was also used to communicate asynchronously with both tools via \inlinebox{read_start(...)}, \inlinebox{read_stop(...)} and \inlinebox{write(...)}. 
 
-And whenever the menu for choosing an example program was started, after waiting for the user to submit a menu entry, the execution was resumed by using \inlinebox{new_async(...)} and \inlinebox{async_send(...)}. After that reading the content of the submitted example file was accomplished by using \inlinebox{fs_open(...)}, \inlinebox{fs_stat(...)}, \inlinebox{fs_read(...)} and \inlinebox{fs_close(...)}. 
+And whenever the menu for choosing an example program was mounted, after letting everything else continue until the user submitted a menu entry, the asynchronous execution of specific code bound to the submission of the menu entry was achieved by using \inlinebox{new_async(...)} and \inlinebox{async_send(...)}. After that, reading the content of the example file associated with the submitted menu entry asynchronously was accomplished by using \inlinebox{fs_open(...)}, \inlinebox{fs_stat(...)}, \inlinebox{fs_read(...)} and \inlinebox{fs_close(...)}. 
 
-Updating the size of the window layout whenever the size of the terminal window running Neovim changes, was achieved using a timer via \inlinebox{new_timer()} and \inlinebox{timer:start(...)} and testing every second if the size of the terminal changed. If the size of the terminal changed, the size of the window layout was updated with the current size of the terminal.
+Updating the size of the window layout whenever the size of the terminal window running Neovim changes, was achieved by using a timer via \inlinebox{new_timer()} and \inlinebox{timer:start(...)} and by testing every second if the size of the terminal changed. If the size of the terminal changed, the size of the window layout was going to be updated with the current size of the terminal.
 
 \section{Preventing unexpected behavior}
 \label{sec:unexpected behavior}
@@ -242,32 +242,34 @@ Updating the size of the window layout whenever the size of the terminal window 
 	\label{fig:statemachine}
 \end{wrapfigure}
 
-A large amount of time was spent on making sure no unexpected behavior can occur when using the RETI-Debugger. The RETI-Debugger is supposed to be used by students in the future and it's important that no unexpected behavior can occur when using this plugin. Most students have a tight time schedule where they can't afford to lose time because of unexpected behavior of the plugin which could cause them to lose their written RETI code etc.
+A large amount of time was spent on making sure no unexpected behavior can occur when using the RETI-Debugger. The RETI-Debugger is supposed to be used by students in the future and it's important that no unexpected behavior can occur when using this plugin that might distract them from using this plugin as support tool for learning PicoC compilation and the RETI assembler.% Most students have a tight time schedule where they can't afford to lose time because of unexpected behavior of the plugin which could cause them to lose their written RETI code etc.
 
-For this reason the \alert{statemachine} in figure \ref{fig:statemachine} was designed, with the statemachine it was a lot easier to be sure to have considered all possible cases and it was a convinient way to document when certain actions are allowed. And it was also an useful tool to make the code more readable and structured.
+For this reason the \alert{statemachine} in figure \ref{fig:statemachine} was designed. With the statemachine it was a lot easier to be sure to have considered all possible cases and it was a convinient way to document when certain actions are allowed. And it was also an useful tool to make the code more readable and structured.
 
 The statemachine $M = (I, S, s_0, \delta)$ is implemented over:
 
 \begin{itemize}
 	\item a finite, non-empty set of \alert{input symbols}:\\
-	$I = \{\text{load example}, \text{start}, \text{complete}, \text{hide}, \text{popup appears}, \text{restart}, \text{quit}, \text{show}, \text{popup closed}\}$
+	$I = \{\text{load example}, \text{start}, \text{complete}, \text{hide}, \text{popup appears}, \text{restart}, \text{quit}, \text{show},$\\$\text{popup closed}, \text{load}, \text{compile}, \text{layout}\}$
 	\item a finite, non-empty set of \alert{states}:\\
-	$S = (V \cup \{\neg v \mid v\in V\})^3$ with \alert{variables}:\\$V = \{\text{interpreter\_completed}, \text{layout\_visible}, \text{popup\_visible}\}$
+	$S = (V \cup \{\neg v \mid v\in V\})^3$ with boolean \alert{variables}:\\$V = \{\text{interpreter\_completed}, \text{layout\_visible}, \text{popup\_visible}\}$
 	\item an \alert{intial state}:\\$s_0 = (\text{interpreter\_completed}, \neg\text{layout\_visible}, \neg\text{popup\_visible})$
 		\item a \alert{transition function}: $\delta: S \times I \rightarrow S$
 \end{itemize}
 
-The variables in $V$ used in the statemachine represent different parts of the RETI-Debugger's state important to control whether a certain action is permitted:
+The input symbols $I$ are associated with certain actions that are possible in the RETI-Debugger. The variables $V$ used in the statemachine represent different parts of the RETI-Debugger's state which are important to determine whether a certain action is permitted:
 
 \begin{itemize}
-	\item \inlinebox{interpreter_terminated}: If the RETI-Interpreter has terminated. That might have happened either because the RETI program has completed, the user quit out of the RETI-Debugger which also terminated the RETI-Intepreter or an exception within the RETI-Interpreter was triggered
-	\item \inlinebox{layout_visible}: If the window layout is visible
-	\item \inlinebox{popup_visible}: If a popup window is visible
+	\item \inlinebox{interpreter_terminated}: Tells whether the RETI-Interpreter has terminated. That might have happened either because the executed RETI program has completed, the user quit out of the RETI-Debugger which also terminated the RETI-Intepreter or an exception within the RETI-Interpreter was triggered.
+	\item \inlinebox{layout_visible}: Tells whether the window layout is visible.
+	\item \inlinebox{popup_visible}: Tells whether a popup window is visible.
 \end{itemize}
 
-The transition function of figure \ref{fig:statemachine} is explicetely implemented in the code of the RETI-Debugger as function \inlinebox{delta_actions(input_sym)}. The function only takes an input symbol \inlinebox{input_sym} from the set $I$ as argument, because the boolean variables $V$ of every state are saved within the lua table of \inlinebox{state.lua} that is accessible within the function \inlinebox{delta_actions(input_sym)}. If a transition exists \inlinebox{true} is returned and the variables are set according to the new state which the transition function assigns. And if a transition doesn't exist \inlinebox{false} is returned. This way the function \inlinebox{delta_actions(input_sym)} can be used to determine if an action is possible in the current state, namely exactly when the input symbol associated with the action and the current state have a transition to another state within the transition function $\delta$.
+The transition function of figure \ref{fig:statemachine} is explicetely implemented in the code of the RETI-Debugger as function \inlinebox{delta_actions(input_sym)}. The function only takes an input symbol \inlinebox{input_sym} from the set $I$ as argument, because the boolean variables $V$ of every state are saved within the lua table of \inlinebox{state.lua} that is accessible within the function \inlinebox{delta_actions}.
 
-The implemented statemachine also wasn't realized 1 to 1 like in figure \ref{fig:statemachine}, because often it is enough to only change the value of a few variables, because the other variables of the state never change when taking a transition associated with a certain input symbol to another state. And also not always all variables have to be checked to determine if a transition associated with a certain input symbol exists, because this transition might already be precisely determined by checking a few of the variables. Additionaly if there's interest in better understanding the statemachine itself different properties ensured by this statemachine are listed in section \ref{sec:properties ensured by the statemachine} of the appendix.
+If a transition exists \inlinebox{true} is returned and the variables are set according to the new state which the transition function assigns. And if a transition doesn't exist \inlinebox{false} is returned. This way the function \inlinebox{delta_actions} can be used to determine if an action is possible in the current state. That is the case when the input symbol associated with the action and the current state have a transition to another state within the transition function $\delta$, i.e if the values of the variables of the current state and the input symbol match to a state (node) and it's outgoing transition (edge) in figure \ref{fig:statemachine}.
+
+The implemented statemachine also wasn't realized 1 to 1 like in figure \ref{fig:statemachine}, because often it is enough to only change the value of a few variables, because the other variables of a state never change when taking a transition associated with a certain input symbol to another state. And also not always all variables have to be checked to determine if a transition associated with a certain input symbol exists, because this transition might already be precisely determined by checking a few of the variables. Additionaly if there's interest in better understanding the statemachine itself, different properties ensured by this statemachine are listed in section \ref{sec:properties ensured by the statemachine} of the appendix.
 
 % \begin{wrapfigure}{R}{0.4\textwidth}
 % 	\centering
@@ -281,25 +283,25 @@ The implemented statemachine also wasn't realized 1 to 1 like in figure \ref{fig
 \vspace{0.5cm}
 \chapter{Conclusion}
 
-After dealing with different implementation details in the preceding sections, now a conclusion should be drawn by listing what has been achieved in section \ref{sec:results} and by listing future enhancement ideas for the plugin in section \ref{sec:enhancement ideas}.
+After dealing with different extension and implementation details in the preceding sections, now a conclusion should be drawn by discussing what has been achieved (section \ref{sec:results}) and by listing future enhancement ideas for the plugin (section \ref{sec:enhancement ideas}).
 
 \section{Results}
 \label{sec:results}
 
-The final product satisfies the definition of a \alert{debugger} which by definition from \cite{Debugger2022} is \enquote{a software program used to test and find bugs in other programs}. The RETI-Debugger is much more convinient than the blunt approach of writing \inlinebox{CALL PRINT <reg>} statements into the RETI code as for every step all registers with their values are visible and there are also arrows marking at which memory cell the registers are pointing at if the register values happen to be memory addresses. The last just mentioned aspect makes it a lot easer to understand the read and write operations to global data and stack.
+The final product implemented in the past weeks satisfies the definition of a \alert{debugger} which by definition from \cite{Debugger2022} is \enquote{a software program used to test and find bugs in other programs}. The RETI-Debugger is much more convinient than the blunt approach of writing \inlinebox{CALL PRINT <reg>} instructions into the RETI code, as for every step where an instruction gets executed all registers with their values are visible. And if the register values happen to be memory addresses, there are also arrows marking at which memory cell the registers are pointing. The last just mentioned aspect makes it a lot easer to follow the read and write operations to global data and stack.
 
-And also compared to the provisional solution I implemented for my bachelor thesis the RETI-Debugger is a huge upgrade as one doesn't have to bother about the length of the RETI code anymore. In the memory focus mode one can just focus a certain sections of the memory in the two last windows as is isn't neccessary anymore to fit the whole state of the REIT processor with registers, EPROM, UART and SRAM into the terminal window. So the RETI-Debugger definitely fascilitates debugging RETI code and thereby according to my arguments earns it be called a debugger.
+And also compared to the provisional solution I implemented for my bachelor thesis, the RETI-Debugger is a huge upgrade, as one doesn't have to bother about the length of the RETI code anymore that one wants to debug. Now, in the memory focus mode, one can just focus certain sections of the memory in the last two windows, as it isn't neccessary anymore to fit the whole state of the RETI processor with registers, EPROM, UART and SRAM into the terminal window. So the RETI-Debugger definitely fascilitates debugging RETI code and thereby according to my arguments earns it to be called a debugger.
 
-But the RETI-Debugger is far from being finished, the current version had the goal to have all fundamental features implemented such that it would provide a good user experience. The RETI-Debugger still only has an action allowing the user to execute one instruction, though common debuggers also have features like setting breakpoints and continuing the execution until the breakpoint is reached etc. Though in the next section \ref{sec:enhancement ideas} there is a listing of future enhancement ideas for the plugin.
+But the RETI-Debugger is far from being finished, the current version only had the goal to have all fundamental features thoroughly implemented, such that the RETI-Debugger provides a good user experience. The RETI-Debugger only allows the user to execute one instruction via an action, though common debuggers also have features like setting breakpoints and continuing the execution until the breakpoint is reached. Thus in the next section \ref{sec:enhancement ideas} there is a listing of future enhancement ideas for the plugin.
 
 \section{Enhancement ideas}
 \label{sec:enhancement ideas}
 
-One enhancement idea already mentioned in the last section when comparing the RETI-Debugger to common debuggers would be to implement breakpoints and a continue action, to immediately continue execution at the breakpoint.
+One enhancement idea already mentioned in the last section when comparing the RETI-Debugger to common debuggers, would be to implement a \inlinebox{set breakpoint} action and a \inlinebox{continue} action, to be able to immediately continue execution at a breakpoint.
 
-Another idea would be to implement an action \inlinebox{set <reg_mem> <val>} allowing to set the value of a certain register or memory cell of the RETI-Interpreter while it's executing the RETI program, which would have been impossible in the provisional debugger I implemented for my bachelor thesis, as this requires the ability to change values at the runtime of the RETI-Interpreter.
+Another idea would be to implement an action \inlinebox{set <reg_mem> <val>}, allowing to set the value of a certain register or memory cell in the RETI-Interpreter while it's executing the RETI program. This would have been impossible in the provisional debugger I implemented for my bachelor thesis, as this requires the ability to change values at the runtime of the RETI-Interpreter.
 
-An idea from the provisional debugger I did not yet implement was to mark certain memory addresses in a certain color which would for example be useful in exercise classes if one want's to mark certain sections of a function call in a particular color to better illustrate the different stages of the function call.
+An idea from the provisional debugger I did not yet implement, was to mark certain currently selected memory addresses in a certain color via a \inlinebox{setcolor <color>} action. This would for example be useful in exercise classes if one want's to mark certain sections of a compiled function call in a particular color, to better illustrate the different stages of the function call.
 
 \clearpage
 \chapter{Appendix}
@@ -457,7 +459,7 @@ As soon as Neovim starts, if the configurations from the config file \inlinebox{
 	\centering
 	\begin{tblr}{
 		width = \linewidth,
-		colspec = {Q[1]Q[2]},
+		colspec = {Q[2]Q[3]},
 		row{1} = {PrimaryColor,fg=white},
 		column{1} = {l},
 		row{even} = {PrimaryColorDimmed},
@@ -755,6 +757,7 @@ In section \ref{sec:choosen_topics} the choice for the two topics from the lectu
 	\label{tab:topics}
 \end{table}
 
+\vspace{0.5cm}
 \chapter{Bibliography}
 \printbibliography[heading=none]
 
