@@ -84,6 +84,7 @@ In the following sections \ref{ch:reti-interpreter} and \ref{ch:reti-debugger} t
 
 % TODO: hier noch die beiden weiteren Themen einleiten
 
+\vspace{0.5cm}
 \chapter{RETI-Interpreter}
 \label{ch:reti-interpreter}
 
@@ -116,6 +117,7 @@ The RETI-Debugger receives the state of the RETI processor after the execution o
 	}
 	\caption{Communication protocol between RETI-Debugger Neovim plugin and RETI-Interpreter}
 	\label{fig:communication reti debugger and reti interpreter}
+  \vspace{-0.5cm}
 \end{wrapfigure}
 
 The RETI-Interpreter receives commands like \inlinebox{next} or the RETI code he should execute over the Stdin pipe by calling the \inlinebox{input(...)} function in Python and sends the state of the RETI processor after the execution of an instruction over the Stdout pipe by calling the \inlinebox{print(...)} function in Python.
@@ -189,6 +191,7 @@ This testing system worked over several bash scripts that called each other, cen
 
 When I had to deal with the code of the PicoC-Compiler again I also used the time to improve the quality of the code and fix small bugs within the PicoC-Compiler whenever I came accross something that could be improved. Explaining all of the small changes would go beyond the scope of this report, but all changes can be loooked up in the \href{https://github.com/matthejue/PicoC-Compiler/commits/missing_semester_project}{commit history} and the most important changes are listed in section \ref{sec:commits to the reti-interpreter} of the Appendix.
 
+\vspace{0.5cm}
 \chapter{RETI-Debugger}
 \label{ch:reti-debugger}
 
