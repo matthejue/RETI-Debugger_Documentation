@@ -217,7 +217,15 @@ The different components also have different keybindings assigned to them as des
 \label{sec:asynchronous execution with libuv}
 % communication protocol
 
-In the exeuction process of the plugin it was often neccessary to wait for a certain event to happen, but then Neovim would actually freeze until this event happens or freeze forever if this event would never happen. For this reason \alert{luv}\cite{LuvitLuvBare} was used to make any code that included waiting for a certain event asynchronous and non-blocking. The luv library makes \alert{libuv}\cite{LibuvLibuvCrossplatform} available in lua, whereby libuv is a widely used cross-platform library to execute code asynchronously.
+In the exeuction process of the plugin it was often neccessary to wait for a certain event to happen, but then Neovim would actually freeze until this event happens or freeze forever if this event would never happen. For this reason \alert{luv}\cite{LuvitLuvBare} was used to make any code that included waiting for a certain event asynchronous and non-blocking. The luv library makes \alert{libuv}\cite{LibuvLibuvCrossplatform} (see logo in figure \ref{fig:logo of libuv}) available in lua, whereby libuv is a widely used cross-platform library to execute code asynchronously.
+
+\begin{wrapfigure}{R}{0.4\textwidth}
+	\centering
+	\includegraphics[width=0.4\textwidth]{./figures/libuv.png}
+	\caption{Logo of libuv}
+	\label{fig:logo of libuv}
+  \vspace{0.25cm}
+\end{wrapfigure}
 
 As luv is actually an external library that was made available in Neovim over the subtable \inlinebox{vim.loop}, the internals of it won't be explained in too much detail as there's an overwehlming amount of theory connected with the topic of asynchronous execution. But as \inlinebox{vim.loop} is technivally in spite of everything a part of Neovim and as the plugin made extensive use of this library there's a special section \ref{sec:asynchronous execution} in the appendix explaining different particularities of using asynchronous execution in Neovim and listing all the different functions from \inlinebox{vim.loop} used in the project.
 
