@@ -12,18 +12,18 @@
 % │ Chapters and Sections │
 % └───────────────────────┘
 \titleformat{\chapter}[hang]
-{\color{PrimaryColor}\normalfont\Large\bfseries}{\thechapter}{0.5cm}{}
+{\color{PrimaryColor}\normalfont\large\bfseries}{\thechapter}{0.5cm}{}
 
 \titlespacing{\chapter}{0cm}{0cm}{0cm}
 
 \titleformat{\section}
-{\color{PrimaryColor}\normalfont\large\bfseries}
+{\color{PrimaryColor}\normalfont\normalsize\bfseries}
 {\thesection}{0.5cm}{}
 \titlespacing{\section}{0cm}{0.2cm}{0.2cm}
 % \renewcommand{\thesection}{\arabic{section}}
 
 \titleformat{\subsection}
-{\color{PrimaryColor}\normalfont\large\bfseries}
+{\color{PrimaryColor}\normalfont\normalsize\bfseries}
 {\thesubsection}{0.5cm}{}
 \titlespacing{\subsection}{0cm}{0.1cm}{0.1cm}
 
@@ -41,6 +41,7 @@
 % ┌───────────────────┐
 % │ Header and Footer │
 % └───────────────────┘
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter. #1}{}}
 \fancypagestyle{plain}{%
 	\fancyhf{}
 	\renewcommand{\headrulewidth}{0.0mm}
@@ -50,8 +51,8 @@
 	\fancyhf{}
 	\fancyfootoffset{0.5cm}
 	\fancyheadoffset{0.5cm}
-  \fancyhead[L]{\color{PrimaryColor}\leftmark}
-	\fancyhead[R]{\color{PrimaryColor}\rightmark}
+  \fancyhead[L]{\color{PrimaryColor}\small\leftmark}
+	\fancyhead[R]{\color{PrimaryColor}\small\rightmark}
 	\renewcommand{\headrulewidth}{0.4mm}
   \renewcommand{\headrule}{\hbox to\headwidth{\color{PrimaryColor}\leaders\hrule height \headrulewidth\hfill}}
 	\fancyfoot[C]{\thepage}
