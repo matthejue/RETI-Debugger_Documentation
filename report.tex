@@ -202,37 +202,31 @@ In the following sections certain implementation details of the RETI-Debugger li
 \section{User Interface}
 \label{sec:user interface with nui}
 
-For the user interface of the RETI-Debugger the \alert{Nui library}\cite{tanjimMunifTanjimNuiNvim2024} was used. The Nui library provides a lot of different prefactured UI components. The RETI-Debugger made use of almost all components in the library like:
+For the user interface (\alert{UI}) of the RETI-Debugger the \alert{Nui library}\cite{tanjimMunifTanjimNuiNvim2024} was used. The Nui library provides a lot of different prefactured UI components. The RETI-Debugger made use of almost all components in the library like:
 \begin{itemize}
   \item \alert{layout} to arrange several floating windows as the main window of the RETI-Debugger that appears when starting the plugin. Another affect of the layout is that all windows in the layout behave like one big window, i.e. a close action to one window also closes all other windows in the layout (see figure \ref{fig:layout}).
   \item \alert{popup} that is a floating window displaying output of \inlinebox{CALL PRINT ACC} instructions of error messages. A special buffer autocommand makes the popup close automatically as soon as one leaves the buffer (see figure \ref{fig:output popup} and figure \ref{fig:error popup}).
   \item \alert{input field} that is a special floating window that allows to submit user input when a \inlinebox{CALL INPUT ACC} instruction is encountered. The input is then send to the RETI-Interpreter via the communication protocol described in section \ref{sec:communication protocol} (see figure \ref{fig:input field}).
-  \item \alert{menu} that is another special type of floating window that allows to select from several options and submit one of them (see figure \ref{fig:menu} and figure \ref{fig:menu example}).
+  \item \alert{menu} that is another special type of floating window that allows to select from several options and submit one of them. The RETI-Debugger has one menu to switch between the \alert{scrolling modes} that are avaiable, \alert{memory focus} and \alert{autoscrolling} and one menu to open an example PicoC program. Both menus with their keybindings and the two scrolling modes are explained in more detail in section \ref{sec:commits to the reti-interpreter} of the appendix (see figure \ref{fig:menu} and figure \ref{fig:menu example}).
 \end{itemize}
 
-The different components also have different keybindings and autocommands assigned to them as described in section \ref{sec:keybindings and commands} in the appendix. In section \ref{sec:user interface components} of the appendix screenshots of the all the different components in use can be seen.
+The different components also have different keybindings and autocommands assigned to them as described in section \ref{sec:keybindings and commands} in the appendix. The meaning of the different windows in the layout is explained in section \ref{sec:user interface components} of the appendix and also screenshots of the all the different components in use can be seen.
 
 % auto resize mit Timer
-% menu, input, output popup
-% bild mit user interface beschrifftet
-% unterschiedliche Festertitle je nach Mode
-% was register relative ist
-% menu entries skipped
-% abkürzung UI
 
 \section{Asynchronous execution}
 \label{sec:asynchronous execution with libuv}
 % communication protocol
 
-In the exeuction process of the plugin it was often neccessary to wait for a certain event to happen, but then Neovim would actually freeze until this event happens or freeze forever if this event would never happen. For this reason \alert{luv} was used to make any code that included waiting for a certain event asynchronous and non-blocking. The luv library makes \alert{libuv} available to lua, whereby \alert{libuv} is a library to execute code asynchronously. The \alert{luv} library is made available in Neovim via the subtable \inlinebox{vim.loop}.
+In the exeuction process of the plugin it was often neccessary to wait for a certain event to happen, but then Neovim would actually freeze until this event happens or freeze forever if this event would never happen. For this reason \alert{luv}\cite{LuvitLuvBare} was used to make any code that included waiting for a certain event asynchronous and non-blocking. The luv library makes \alert{libuv}\cite{LibuvLibuvCrossplatform} available to lua, whereby libuv is a widely used cross-platform library to execute code asynchronously.
 
-This library is also able to start processes in own threads such that they can be executed \alert{(pseudo-)parallel}. When the RETI-Debugger is started the RETI-Intepreter is started in it's own thread via the \inlinebox{spawn(...)} function and also when a short compilation is started with the PicoC-Compiler, it is started in it's own thread via \inlinebox{spawn(...)}. The communication with both tools works over \alert{pipes} for Stdin \inlinebox{state.stdin}, Stdout \inlinebox{state.stdout} and Stderr \inlinebox{state.stderr} stored in the file \inlinebox{state.lua} that get passed to the \inlinebox{spawn(...)} function.
+As luv is actually an external library that was made available in Neovim over the subtable \inlinebox{vim.loop}, the internals of it won't be explained in too much detail as there's an overwehlming amount of theory connected with this topic. But as \inlinebox{vim.loop} is technivally in spite of everything a part of Neovim and as the plugin made extensive use of this library there's a special section \ref{sec:asynchronous execution} in the appendix explaining different particularities of using asynchronous execution in Neovim and listing all the different functions from \inlinebox{vim.loop} used in the project.
 
-This way Neovim won't freezy until the process finished unlike it would when being executed with the lua function \inlinebox{os.execute(...)}. For the RETI-Interpreter this is even neccessary, because it's supposed to be running (pseudo-)parallel all the time while the RETI-Debugger is running.
+The library was used for starting the RETI-Interpreter and PicoC-Compiler \alert{(pseudo-)parallel} in their own \alert{threads} via \inlinebox{spawn(...)}, as otherwise they would freeze Neovim until they are finished. For the RETI-Interpreter this is even neccessary, because it's supposed to keep a communication protocol running with the RETI-Debugger at all time. The library was also used to communicate asynchronously with both tools via \inlinebox{read_start(...)}, \inlinebox{read_stop(...)} and \inlinebox{write(...)}. 
 
-With the functions \inlinebox{write(state.stdin, ...)}. With the functions \inlinebox{read_start(state.stdout, ...)}.
+And whenever the menu for choosing an example program was started, after waiting for the user to submit a menu entry, the execution was resumed by using \inlinebox{new_async(...)} and \inlinebox{async_send(...)}. After that reading the content of the submitted example file was accomplished by using \inlinebox{fs_open(...)}, \inlinebox{fs_stat(...)}, \inlinebox{fs_read(...)} and \inlinebox{fs_close(...)}. 
 
-It is not possible to execute anything in (pseudo-)parallel that depends on the Neovim API as Neovim is still up to this day \alert{single-threaded}. Instead it is excuted \alert{asynchronous}, one is performing independent tasks within a single thread such that no task blocks the main execution flow. Instead of pausing during lengthy operations, asynchronous methods allow the rest of the program to continue operating normally. Once the background task finishes, usually through a callback mechanism, the necessary actions occur according to the outcome of the completed task.
+Updating the size of the window layout whenever the size of the terminal window running Neovim changes, was achieved using a timer via \inlinebox{new_timer()} and \inlinebox{timer:start(...)} and testing every second if the size of the terminal changed. If the size of the terminal changed, the size of the window layout was updated with the current size of the terminal.
 
 \section{Preventing unexpected behavior}
 \label{sec:unexpected behavior}
@@ -309,7 +303,10 @@ An idea from the provisional debugger I did not yet implement was to mark certai
 \chapter{Appendix}
 \pagenumbering{Alph}
 
+The appendix is for information about the project that is not essential for understanding the project itself, but that might be interesting for some readers or for information that is only there for documentation purposes. Different sections of the appendix get referenced in the main part of the report.%whenever there's additional information that had not enough priority to make it into the report.
+
 \section{Installation and Testing}
+\label{sec:installation and testing}
 % Recommended to just check out \inlinebox{Dockerfile}
 
 For the students who have to test this plugin I recommend to just use the \inlinebox{Dockerfile} in the main folder of the repository as described in \ref{sec:running in a docker image}. The \inlinebox{Dockerfile} just sets everything up for you and you don't have to install anything yourself etc.
@@ -580,7 +577,7 @@ As soon as the window layout is mounted within the buffers of this layout the ke
 		\inlinebox{n}         & The next instruction will be executed in the RETI-Interpreter and the new state of the RETI processor is going to be displayed in the RETI-Debugger                      \\
 		\inlinebox{Tab}       & Switch between windows in the layout                                                                                                                                     \\
 		\inlinebox{Shift+Tab} & Switch backwards between windows in the layout                                                                                                                           \\
-		\inlinebox{m}         & Opens menu to switch modes, the desired mode can be selected with \inlinebox{Enter}, there are only \alert{autoscrolling} and \alert{memory focus} mode available        \\
+		\inlinebox{m}         & Opens menu to switch scrolling mode, the desired mode can be selected with \inlinebox{Enter}, there are only \alert{autoscrolling} and \alert{memory focus} mode available that are explained below this table \\
 		\inlinebox{f}         & Focus memory if the \alert{memory focus} mode is active                                                                                                                  \\
 		\inlinebox{r}         & Restart the RETI-Debugger with the currentely loaded RETI code                                                                                                           \\
 		\inlinebox{q}         & Quit the RETI-Debugger, kill the RETI-Interpreter if it's running, unmount the window layout and delete all global keybindings that are not supposed to be always active \\
@@ -588,6 +585,12 @@ As soon as the window layout is mounted within the buffers of this layout the ke
 	\caption{Buffer Keybindings}
 	\label{tab:buffer keybindings}
 \end{table}
+
+In \alert{memory focus} mode the start and end of the datasegment get initialy  focused in the second and third SRAM window on the first execution of the next action, executing the next instruction. The second and third window can then be moved freely aftwarwards, while the first SRAM window always keeps the program counter arrow centered in the window.
+
+In the \alert{autoscrolling} mode all SRAM windows scroll synchronously, the first SRAM window always keeps the program counter arrow centered in the window, the second window covers the part of the buffer after the line where the first window ends and the third window covers the part of the buffer after the line where the second window ends
+
+When opening the menu for switching scrolling modes, the mode one is currently in can't be selected and gets skipped. As there are only two modes at the momemt the other mode is directly selected and no change of selection is possible. A small little detail that is propably hard to notice is that the titles of the second and third SRAM window change depending on the scrolling mode one is in.
 
 % which-key erwähnen und backspace
 % colorscheme erwähnen
@@ -614,7 +617,11 @@ In section \ref{sec:bugfixes and code improvements} the following list of smalle
 \section{User Interface components}
 \label{sec:user interface components}
 
-In section \ref{sec:user interface with nui} the following screenshots of the user interface of the RETI-Debugger were mentioned. As the user interface is anways known to anyone who started the plugin and these screenshots don't contain information relevant for understanding the RETI-Debugger, they were put here:
+In section \ref{sec:bugfixes and code improvements} the following list of smaller improvements to the PicoC-Compiler and RETI-Interpreter was mentioned. As these improvements are mostly important for documentation purposes and don't contain information relevant for understanding the RETI-Debugger, they are listed here:
+
+In section \ref{sec:user interface with nui} the following screenshots of the user interface (\alert{UI}) of the RETI-Debugger were mentioned. As the UI is anyways known to anyone who started the plugin and these screenshots don't contain information relevant for understanding the RETI-Debugger, they were put here:
+
+The meaning of the different windows in the window layout in figure \ref{fig:layout} should mostly be self-explanatory by their respective title, i.e. the window with the title \inlinebox{Registers} displays the registers and their current values. Only the window with the title \inlinebox{Registers Relative} requires some explanation: In case in a register an address from the SRAM is saved, this window should make it easier to tell the relative position to the beginning of the SRAM by subtracting the memory map constant of the SRAM from all registers and only displaying a value larger then zero if no negative value would be displayed.
 
 \begin{figure}[H]
 	\centering
@@ -626,21 +633,21 @@ In section \ref{sec:user interface with nui} the following screenshots of the us
 	\begin{minipage}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/input_field.png}
-		\caption{Output popup}
-    \label{fig:output popup}
+		\caption{Input field}
+    \label{fig:input field}
 	\end{minipage}
 	\begin{minipage}[b]{0.5\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{./figures/output_popup.png}
-		\caption{Error popup}
-    \label{fig:error popup}
+		\caption{Output popup}
+    \label{fig:output popup}
 	\end{minipage}
 \end{figure}
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{./figures/error_popup.png}
-	\caption{Input field}
-  \label{fig:input field}
+	\caption{Error popup}
+  \label{fig:error popup}
 \end{figure}
 \begin{figure}[H]
 	\centering
@@ -661,6 +668,24 @@ In section \ref{sec:user interface with nui} the following screenshots of the us
     \label{fig:menu example}
 	\end{minipage}
 \end{figure}
+
+\section{Asynchronous execution}
+\label{sec:asynchronous execution}
+
+In section \ref{sec:asynchronous execution with libuv} it was explained how the different functions from the \alert{luv} library were used in the code of the RETI-Debugger. As asynchronous behaviour and the \alert{luv} library are quite extensive topics and also not so directly related to Neovim, they are going to be explained here in this section of the appendix.
+
+What's important to know about Neovim is, that it's not possible to execute anything in (pseudo-)parallel that depends on the \alert{Neovim API} as Neovim is still up to this day \alert{single-threaded}. To circumvent this the libuv library allows to excute code \alert{asynchronously} within a single thread. Instead of pausing during long running tasks, asynchronous execution allows the remaining program to execute as usual. A background task is started and up on completion of the background task a \alert{callback function} is executed.
+
+Unfortunetely there's also a problem with executing code that depends on the Neovim API in the callback function. But fortunetely there's also a solution for this problem built into Neovim, namely the function \inlinebox{vim.schedule_wrap(...)}. This function defers the execution of the callback function until the Neovim API is safe to access again. This is necessary because certain parts of Neovim may temporarily restrict direct usage of the API during particular events.
+
+Although libuv is a library for asynchronous code execution it can also perform \alert{(pseudo-)parallel} code execution of binaries, as only code executed within the current Neovim instance can depend on the Neovim API. This way Neovim won't freezy until the binary finishes execution, unlike it would when being executed with the lua function \inlinebox{os.execute(...)}.
+
+Several functions from the subtable \inlinebox{vim.loop} that consists of functions from the \alert{luv} library were used in the code of the RETI-Debugger:
+\begin{itemize}
+  \item \inlinebox{spawn(...)}: Used to start the RETI-Intepreter and PicoC-Compiler (pseudo-)parallel in their own threads. In this case (pseudo-)parallel execution is possible, because there are no dependencies to the Neovim API. The communication with both tools works over \alert{pipes} for Stdin \inlinebox{state.stdin}, Stdout \inlinebox{state.stdout} and Stderr \inlinebox{state.stderr} stored in the file \inlinebox{state.lua} that get passed to the \inlinebox{spawn(...)} over the option \inlinebox{stdio} function
+  \item \inlinebox{read_start(state.stdout, ...)}: Reads all output from \inlinebox{state.stdout}
+  \item \inlinebox{write(state.stdin, ...)}: Write all input to \inlinebox{state.stdin}
+\end{itemize}
 
 \section{Properties ensured by the statemachine}
 \label{sec:properties ensured by the statemachine}
@@ -724,11 +749,3 @@ In section \ref{sec:choosen_topics} the choice for the two topics from the lectu
 \printbibliography[heading=none]
 
 \end{document}
-
-% Fleury: Da ja eigenes Template
-% brauchen wir Abstract oder so wie in Example PDF?
-% Schtiftgröße in Bildern ok?
-% zählt Titel auch in Seitenzahl rein?
-% Transitions so ok?
-
-% Latex Sourcecode selbst explizit verlinken. Unterscheidung zwischen PDF und Sourcecode
