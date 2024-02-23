@@ -90,7 +90,7 @@ In the following sections \ref{ch:reti-interpreter} and \ref{ch:reti-debugger} t
 \chapter{RETI-Interpreter}
 \label{ch:reti-interpreter}
 
-In the following sections the extensions to the RETI-Interpreter that were made, like the communication protocol between the RETI-Interpreter and the RETI-Debugger (section \ref{sec:communication protocol}), the new medadata extraction feature (section \ref{sec:reading in metadata from comments}) and various bug fixes (section \ref{sec:bugfixes and code improvements}) are going to be explained.
+In the following sections the extensions to the RETI-Interpreter that were made, like the communication protocol between RETI-Interpreter and RETI-Debugger (section \ref{sec:communication protocol}), the new metadata extraction feature (section \ref{sec:reading in metadata from comments}) and various bug fixes (section \ref{sec:bugfixes and code improvements}) are going to be explained.
 % TODO: mehr Bezug nehmen
 
 % \section{Directory structure}
@@ -104,11 +104,10 @@ In the following sections the extensions to the RETI-Interpreter that were made,
 % https://tex.stackexchange.com/questions/28818/how-can-i-prevent-inline-math-formulas-from-overflowing-into-the-margin
 \sloppy
 
-In order to debug RETI code there has to be a communication between RETI-Interpreter and RETI-Debugger such that the RETI-Interpreter can receive commands by the RETI-Debugger to e.g. execute the next instruction and the RETI-Debugger receives the state of the registers, EPROM, UART and SRAM after the execution of an instruction by the RETI-Intepreter. Because the RETI-Interpreter shouldn't expect to always communicate with the RETI-Debugger, as it is also a standalone tool by itself, thus the communication with the RETI-Debugger is activated over the commandline option \inlinebox{-P}.
+In order to debug RETI code there has to be a communication between RETI-Interpreter and RETI-Debugger such that the RETI-Interpreter can receive commands by the RETI-Debugger to e.g. execute the next instruction and the RETI-Debugger receives the state of the registers, EPROM, UART and SRAM after the execution of an instruction by the RETI-Intepreter. Because the RETI-Interpreter shouldn't expect to always be communicating with the RETI-Debugger, as it is also a standalone tool by itself, the communication with the RETI-Debugger is activated over the commandline option \inlinebox{-P}.
 
-Often a server is used for such communcation, but in this case the communcation just works over \alert{pipes} for Standardinput (\alert{Stdin}), Standardoutput (\alert{Stdout}) and Standarderror (\alert{Stderr}), as for a simple tool that should assist students in understanding PicoC and RETI assembler it's quite unlikely someone would feel the desire to execute the RETI-Interpreter on another machine and use the RETI-Debugger on another one.
-
-The RETI-Debugger receives the state of the RETI processor after the execution of an instruction by the RETI-Interpreter over the Stdout pipe by calling the \inlinebox{read_start(state.stdout, ...)} function in \inlinebox{vim.loop} and sends the RETI code the RETI-Interpreter should execute and also acknowledgments or commands like \inlinebox{next} over the Stdin pipe by calling the \inlinebox{write(state.stdin, ...)} function in \inlinebox{vim.loop}. In section \ref{sec:asynchronous execution with libuv}  the subtable \inlinebox{vim.loop} is going to be explained in more detail.
+% Often a server is used for such communication, but in this case the communication just works over \alert{pipes} for Standardinput (\alert{Stdin}), Standardoutput (\alert{Stdout}) and Standarderror (\alert{Stderr}), as for a simple tool that should assist students in understanding PicoC and RETI assembler, it's quite unlikely someone would feel the desire to execute the RETI-Interpreter on another machine and use the RETI-Debugger on another one.
+The communication works over \alert{pipes} for Standardinput (\alert{Stdin}), Standardoutput (\alert{Stdout}) and Standarderror (\alert{Stderr}). The RETI-Debugger receives output from the RETI-Interpreter over the Stdout pipe by calling the \inlinebox{read_start(state.stdout, ...)} function in \inlinebox{vim.loop}. And it sends input that the RETI-Interpreter should process over the Stdin pipe by calling the \inlinebox{write(state.stdin, ...)} function in \inlinebox{vim.loop}. In section \ref{sec:asynchronous execution with libuv}  the subtable \inlinebox{vim.loop} is going to be explained in more detail.
 % discussed later
 % vim loop is, asynchronous
 
@@ -122,9 +121,7 @@ The RETI-Debugger receives the state of the RETI processor after the execution o
   \vspace{-0.5cm}
 \end{wrapfigure}
 
-The RETI-Interpreter receives commands like \inlinebox{next} or the RETI code he should execute over the Stdin pipe by calling the \inlinebox{input(...)} function in Python and sends the state of the RETI processor after the execution of an instruction over the Stdout pipe by calling the \inlinebox{print(...)} function in Python.
-
-The \inlinebox{input(...)} function was choosen, because then the end of a message can be particularly easy specified by adding a newline character \inlinebox{\textbackslash n} to the end of the message. The end of a message somehow has to be indicated, else the RETI-Interpreter doesn't know when to stop listening and continue it's execution.
+On the other side the RETI-Interpreter receives input over the Stdin pipe by calling the \inlinebox{input(...)} function in Python and sends output over the Stdout pipe by calling the \inlinebox{print(...)} function in Python. The \inlinebox{input(...)} function was choosen, because for the \inlinebox{input()} function the end of a message can be particularly easy specified by adding a newline character \inlinebox{\textbackslash n} to the end of the message. The end of a message somehow has to be indicated, otherwise the RETI-Interpreter continues listening and won't continue it's execution.
 
 At the very beginning of the communication the RETI-Debugger sends the content of the current buffer to the RETI-Intepreter which should preferably contain RETI code via \inlinebox{write(state.stdin, } \inlinebox{bfcontent .. "\textbackslash n")}. The \alert{communication protocol} is visualized in figure \ref{fig:communication reti debugger and reti interpreter}. In order to send the complete buffer at once though each newline character \inlinebox{\textbackslash n} is replaced by the Record Separator character (\alert{RS}) \inlinebox{0x1E} beforehand, because else the RETI-Interpreter would stop listening and continue it's execution as soon as it receives a newline character. Instead of the RS character I could have also choosen other ASCII characters as long as they can't occur naturally in RETI code and have no special meaning in lua strings. As all of this critera applied to the RS character it was chosen as a replacement character.
 
