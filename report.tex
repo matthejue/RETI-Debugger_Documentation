@@ -685,14 +685,14 @@ Several functions from the subtable \inlinebox{vim.loop} that consists of functi
   \item \inlinebox{spawn(...)}: Used to start the RETI-Intepreter and PicoC-Compiler (pseudo-)parallel in their own threads. In this case (pseudo-)parallel execution is possible, because there are no dependencies to the Neovim API. The communication with both tools works over \alert{pipes} for Stdin \inlinebox{state.stdin}, Stdout \inlinebox{state.stdout} and Stderr \inlinebox{state.stderr} stored in the file \inlinebox{state.lua} that get passed to the \inlinebox{spawn(...)} over the option \inlinebox{stdio} function.
   \item \inlinebox{read_start(state.stdout, callback)}: Repeatedly reads data asynchronously from \inlinebox{state.stdout} until \inlinebox{read_stop(state.stdout)} is called. It does collect the output of several calls of python's \inlinebox{print()} function until the callback function is called with all output merged into one string called \inlinebox{data}. After which amount of time or after what amount of data the callback function gets called is nowhere specified. 
   \item \inlinebox{write(state.stdin, callback)}: Write data asynchronously to \inlinebox{state.stdin} once.
-  \item \inlinebox{new_async(vim.schedule_wrap(callback) -> async_event}:
-  \item \inlinebox{async_send(async_event)}:
+  \item \inlinebox{new_async(callback) -> async_event}: Creates a asynchronous event calling the callback function that can later be started with \inlinebox{async_send}.
+  \item \inlinebox{async_send(async_event)}: Starts the asynchronous event \inlinebox{async_event}.
   \item \inlinebox{fs_open(path, "r", 438, callback[err, fd])}: Asynchronously starts opening a file and calls the callback function when finished. Typically calls \inlinebox{fs_stat()} within it's callback function.
   \item \inlinebox{fs_stat(fd, callback[err, stat])}: Asynchronously gathers information about a file and calls the callback function when finished with a table as argument \inlinebox{stat} containing information about the file. Typically calls \inlinebox{fs_read()} within it's callback function, passing the argument \inlinebox{stat.size} to it.
-  \item \inlinebox{fs_read(fd, stat.size callback)}:  Asynchronously reads data from a file and calls the callback function when finished.
-  \item \inlinebox{fs_close()}:
-  \item \inlinebox{new_timer() -> timer}:
-  \item \inlinebox{timer:start()}:
+  \item \inlinebox{fs_read(fd, stat.size, callback[err, data])}:  Asynchronously reads \inlinebox{stat.size} amount of data from a file and calls the callback function when finished.
+  \item \inlinebox{fs_close(fd, callback[err])}: Asynchronously closes a file and calls the callback function for error handling when finished. Closing a file ensures that all data is written to the file as it is usually buffered until the buffer is full and only then written to the file.
+  \item \inlinebox{new_timer() -> timer}: Creates a \inlinebox{timer}.
+  \item \inlinebox{timer:start(until_first_call, repeat_all_n, callback)}: Start the timer calling the callback function first after \inlinebox{until_first_call} milliseconds and then repeatedly after \inlinebox{repeat_all_n} milliseconds.
 \end{itemize}
 
 \section{Properties ensured by the statemachine}
