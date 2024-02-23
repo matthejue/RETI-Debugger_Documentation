@@ -51,33 +51,35 @@ The motivation for this project is going to be explained in section \ref{sec:mot
 	\includegraphics[width=0.4\textwidth]{./figures/picoc_compiler.png}
 	\caption{Logo of the PicoC-Compiler}
 	\label{fig:logo of the picoc compiler}
+  \vspace{0.25cm}
 \end{wrapfigure}
 
-When I had to implement a PicoC-to-RETI-Compiler for my bachelor thesis I often had the problem that I had to debug the RETI code produced by the \alert{PicoC-Compiler} (\href{https://github.com/matthejue/PicoC-Compiler/tree/missing_semester_project}{Repo} and logo in figure \ref{fig:logo of the reti debugger}). \alert{PicoC} is a subset of C used in the operating systems lecture at the university of freiburg and \alert{RETI} is an assembler used in the operating systems and technical computer science lectures at the univeristy of freiburg.
+When I had to implement a PicoC-to-RETI-Compiler for my bachelor thesis I often had the problem that I had to debug the RETI code produced by the \alert{PicoC-Compiler} (\href{https://github.com/matthejue/PicoC-Compiler/tree/missing_semester_project}{Repo} and logo in figure \ref{fig:logo of the picoc compiler}). \alert{PicoC} is a subset of C used in the operating systems lecture at the university of freiburg and \alert{RETI} is an assembler used in the operating systems and technical computer science lectures at the univeristy of freiburg.
 
-The PicoC-Compiler I implemented for the lecture has actually also a built-in \alert{RETI-Interpreter} that was neccessary to test the RETI-Code produced by the PicoC-Compiler. But just executing the RETI-Code and putting in \inlinebox{CALL PRINT <reg>} instructions was not sufficient, I needed some kind of debugger.
+The PicoC-Compiler I implemented has actually also a built-in \alert{RETI-Interpreter} that was neccessary to test the RETI-Code produced by the PicoC-Compiler. But just executing the RETI-Code and putting in \inlinebox{CALL PRINT <reg>} instructions was not sufficient, I needed some kind of debugger.
 
-I came up with a provisional solution that can e.g. be seen \href{https://asciinema.org/a/526542}{here}. I implemented a sort of Vim plugin that was actually just a \href{https://github.com/matthejue/PicoC-Compiler/blob/master/src/interpr_showcase.vim}{config file} with special keybindings and settings. I implemented a special so called \alert{Show-Mode} into the PicoC-Compiler which actually just wrote the state of the RETI processor after each instruction with all it's registers, EPROM, UART and SRAM into a file and the provisional Vim plugin just jumped to the right place in this big file and used several windows that scrolled synchronously to fit as much RETI instructions as possible into the terminal window.
+I came up with a provisional solution that can e.g. be seen \href{https://asciinema.org/a/526542}{here}. I implemented a sort of Vim plugin that was actually just a \href{https://github.com/matthejue/PicoC-Compiler/blob/master/src/interpr_showcase.vim}{config file} with special keybindings and settings. I implemented a special so called \alert{Show-Mode} into the RETI-Interpreter which actually just wrote the state of the RETI processor after each instruction with all it's registers, EPROM, UART and SRAM into a file. And the provisional Vim plugin just jumped to the right place in this big file and used several windows that scrolled synchronously to fit as much RETI instructions as possible into the terminal window.
 
 \begin{wrapfigure}{L}{0.4\textwidth}
 	\centering
 	\includegraphics[width=0.4\textwidth]{./figures/reti-debugger.png}
 	\caption{Logo of the RETI-Debugger}
 	\label{fig:logo of the reti debugger}
+  \vspace{0.25cm}
 \end{wrapfigure}
 
-This solution was very proviosonal and it was the best low effort solution I could come up with in the short amount of time I had. The solution surely had it's flaws, because the whole program (codesegment) and datasegment hat to fit into the visible windows and one had to guess the number of windows neccessary beforehand. And if the program is too big there is a limit how for one can decrease the font size of the terminal window in order to fit as much RETI instructions as possible into the terminal window.
+% This solution was very proviosonal and it was the best low effort solution I could come up with in the short amount of time I had. 
 
-When I tutored the Operating Systems lecture using this \alert{Show-Mode} of the RETI-Interpreter to present the solutions of RETI exercises to the students I felt the urge to have a better tool for this, because for some programs I had to reduce the font size of the terminal window a lot such that the students could just barely see the instructions and values of the registers and memory cells.
+When I tutored the Operating Systems lecture using this \alert{Show-Mode} of the RETI-Interpreter to present the solutions of RETI exercises to the students I felt the urge to have a better tool for this, because this provisional solution surely had it's flaws, because the whole state of the RETI processor with a SRAM of variable length had to fit into the visible windows and one had to guess the number of windows neccessary beforehand. And if I reduced the font size of the terminal window the students could just barely see the instructions and values of the registers and memory cells. And besides that there's also a limit how for one can decrease the font size of the terminal window in order to fit as much RETI instructions of the program (codesegment) and datasegment cells as possible into the terminal window.
 
-And now for this missing semester course the choice for my project came quite naturally, I wanted to finally implement a proper \alert{RETI-Debugger} (\href{https://github.com/freiburg-missing-semester-course/project-matthejue}{Repo} and logo in figure \ref{fig:logo of the reti debugger}) that communicates with the RETI-Interpreter to show the state of the RETI processor after each instruction and doing other shenanigans like compiling the PicoC code within the buffer directly into RETI code etc.
+Thus now for this missing semester course the choice for my project came quite naturally, I wanted to finally implement a proper \alert{RETI-Debugger} (\href{https://github.com/matthejue/RETI-Debugger}{Repo} and logo in figure \ref{fig:logo of the reti debugger}) that communicates with the RETI-Interpreter to show the state of the RETI processor after each instruction and doing other shenanigans like compiling the PicoC code within the buffer directly into RETI code etc.
 
 \section{Choosen Topics}
 \label{sec:choosen_topics}
 
-By the choice of my project the two main topics I had to choose were \alert{Neovim} and \alert{Python}, as the \alert{RETI-Debugger} is going to be implemented as a Neovim plugin and the \alert{RETI-Interpreter} that is part of the PicoC-Compiler is implemented in Python. These two topics and other topics from the lecture also touched in the project are described in table \ref{tab:topics}.
+By the choice of my project the two main topics I had to choose were \alert{Neovim} and \alert{Python}, as the \alert{RETI-Debugger} is going to be implemented as a Neovim plugin and the \alert{RETI-Interpreter} that is going to be extended is implemented in Python. These two topics and other topics from the lecture also touched in the project are described in table \ref{tab:topics}.
 
-In the following sections \ref{ch:reti-interpreter} and \ref{ch:reti-debugger} the two topics from the lecture, Python and Neovim that should be explained in more detail are going to represented by the RETI-Intepreter and RETI-Debugger respectively whose extensions and also implementation is going to be explained.
+In the following sections \ref{ch:reti-interpreter} and \ref{ch:reti-debugger} the two topics from the lecture, Python and Neovim that should be explained in more detail are going to represented by the RETI-Intepreter and RETI-Debugger respectively whose extension and also implementation is going to be explained.
 
 % RETI-Intepreter und PicoC-Compiler das gleiche Executable
 % and \ref{ch:preventing unexpected behavior} the choice for the two topics from the lecture that are going to be explained in more detail is going to be explained in section \ref{sec:choosen_topics}.
@@ -88,7 +90,7 @@ In the following sections \ref{ch:reti-interpreter} and \ref{ch:reti-debugger} t
 \chapter{RETI-Interpreter}
 \label{ch:reti-interpreter}
 
-In the following sections the extensions to the RETI-Interpreter that were made like the communication protocol between the RETI-Interpreter and the RETI-Debugger (section \ref{sec:communication protocol}), the new medadata extraction feature (section \ref{sec:reading in metadata from comments}) and various bug fixes (section \ref{sec:bugfixes and code improvements}) are going to be explained.
+In the following sections the extensions to the RETI-Interpreter that were made, like the communication protocol between the RETI-Interpreter and the RETI-Debugger (section \ref{sec:communication protocol}), the new medadata extraction feature (section \ref{sec:reading in metadata from comments}) and various bug fixes (section \ref{sec:bugfixes and code improvements}) are going to be explained.
 % TODO: mehr Bezug nehmen
 
 % \section{Directory structure}
