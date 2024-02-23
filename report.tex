@@ -118,9 +118,9 @@ The RETI-Debugger receives the state of the RETI processor after the execution o
 	\label{fig:communication reti debugger and reti interpreter}
 \end{wrapfigure}
 
-The RETI-Interpreter receives commands like \inlinebox{next} or the RETI code he should execute over the Stdin pipe by calling the \inlinebox{input()} function in Python and sends the state of the RETI processor after the execution of an instruction over the Stdout pipe by calling the \inlinebox{print()} function in Python.
+The RETI-Interpreter receives commands like \inlinebox{next} or the RETI code he should execute over the Stdin pipe by calling the \inlinebox{input(...)} function in Python and sends the state of the RETI processor after the execution of an instruction over the Stdout pipe by calling the \inlinebox{print(...)} function in Python.
 
-The \inlinebox{input()} function was choosen, because then the end of a message can be particularly easy specified by adding a newline character \inlinebox{\textbackslash n} to the end of the message. The end of a message somehow has to be indicated, else the RETI-Interpreter doesn't know when to stop listening and continue it's execution.
+The \inlinebox{input(...)} function was choosen, because then the end of a message can be particularly easy specified by adding a newline character \inlinebox{\textbackslash n} to the end of the message. The end of a message somehow has to be indicated, else the RETI-Interpreter doesn't know when to stop listening and continue it's execution.
 
 At the very beginning of the communication the RETI-Debugger sends the content of the current buffer to the RETI-Intepreter which should preferably contain RETI code via \inlinebox{write(state.stdin, } \inlinebox{bfcontent .. "\textbackslash n")}. The \alert{communication protocol} is visualized in figure \ref{fig:communication reti debugger and reti interpreter}. In order to send the complete buffer at once though each newline character \inlinebox{\textbackslash n} is replaced by the Record Separator character (\alert{RS}) \inlinebox{0x1E} beforehand, because else the RETI-Interpreter would stop listening and continue it's execution as soon as it receives a newline character. Instead of the RS character I could have also choosen other ASCII characters as long as they can't occur naturally in RETI code and have no special meaning in lua strings. As all of this critera applied to the RS character it was chosen as a replacement character.
 
@@ -682,9 +682,17 @@ Although libuv is a library for asynchronous code execution it can also perform 
 
 Several functions from the subtable \inlinebox{vim.loop} that consists of functions from the \alert{luv} library were used in the code of the RETI-Debugger:
 \begin{itemize}
-  \item \inlinebox{spawn(...)}: Used to start the RETI-Intepreter and PicoC-Compiler (pseudo-)parallel in their own threads. In this case (pseudo-)parallel execution is possible, because there are no dependencies to the Neovim API. The communication with both tools works over \alert{pipes} for Stdin \inlinebox{state.stdin}, Stdout \inlinebox{state.stdout} and Stderr \inlinebox{state.stderr} stored in the file \inlinebox{state.lua} that get passed to the \inlinebox{spawn(...)} over the option \inlinebox{stdio} function
-  \item \inlinebox{read_start(state.stdout, ...)}: Reads all output from \inlinebox{state.stdout}
-  \item \inlinebox{write(state.stdin, ...)}: Write all input to \inlinebox{state.stdin}
+  \item \inlinebox{spawn(...)}: Used to start the RETI-Intepreter and PicoC-Compiler (pseudo-)parallel in their own threads. In this case (pseudo-)parallel execution is possible, because there are no dependencies to the Neovim API. The communication with both tools works over \alert{pipes} for Stdin \inlinebox{state.stdin}, Stdout \inlinebox{state.stdout} and Stderr \inlinebox{state.stderr} stored in the file \inlinebox{state.lua} that get passed to the \inlinebox{spawn(...)} over the option \inlinebox{stdio} function.
+  \item \inlinebox{read_start(state.stdout, callback)}: Repeatedly reads data asynchronously from \inlinebox{state.stdout} until \inlinebox{read_stop(state.stdout)} is called. It does collect the output of several calls of python's \inlinebox{print()} function until the callback function is called with all output merged into one string called \inlinebox{data}. After which amount of time or after what amount of data the callback function gets called is nowhere specified. 
+  \item \inlinebox{write(state.stdin, callback)}: Write data asynchronously to \inlinebox{state.stdin} once.
+  \item \inlinebox{new_async(vim.schedule_wrap(callback) -> async_event}:
+  \item \inlinebox{async_send(async_event)}:
+  \item \inlinebox{fs_open(path, "r", 438, callback[err, fd])}: Asynchronously starts opening a file and calls the callback function when finished. Typically calls \inlinebox{fs_stat()} within it's callback function.
+  \item \inlinebox{fs_stat(fd, callback[err, stat])}: Asynchronously gathers information about a file and calls the callback function when finished with a table as argument \inlinebox{stat} containing information about the file. Typically calls \inlinebox{fs_read()} within it's callback function, passing the argument \inlinebox{stat.size} to it.
+  \item \inlinebox{fs_read(fd, stat.size callback)}:  Asynchronously reads data from a file and calls the callback function when finished.
+  \item \inlinebox{fs_close()}:
+  \item \inlinebox{new_timer() -> timer}:
+  \item \inlinebox{timer:start()}:
 \end{itemize}
 
 \section{Properties ensured by the statemachine}
