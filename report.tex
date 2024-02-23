@@ -217,7 +217,7 @@ The different components also have different keybindings assigned to them as des
 \label{sec:asynchronous execution with libuv}
 % communication protocol
 
-In the exeuction process of the plugin it was often neccessary to wait for a certain event to happen, but then Neovim would actually freeze until this event happens or freeze forever if this event would never happen. For this reason \alert{luv}\cite{LuvitLuvBare} was used to make any code that included waiting for a certain event asynchronous and non-blocking. The luv library makes \alert{libuv}\cite{LibuvLibuvCrossplatform} (see logo in figure \ref{fig:logo of libuv}) available in lua, whereby libuv is a widely used cross-platform library to execute code asynchronously.
+In the exeuction process of the plugin it was often neccessary to wait for a certain event to happen, but then Neovim would actually freeze until this event happens or freeze forever if this event would never happen. For this reason \alert{luv}\cite{LuvitLuvBare} (see \href{https://github.com/luvit/luv/blob/master/docs.md}{documentation}) was used to make any code that included waiting for a certain event asynchronous and non-blocking. The luv library makes \alert{libuv}\cite{LibuvLibuvCrossplatform} (see logo in figure \ref{fig:logo of libuv}) available in lua, whereby libuv is a widely used cross-platform library to execute code asynchronously.
 
 \begin{wrapfigure}{R}{0.4\textwidth}
 	\centering
